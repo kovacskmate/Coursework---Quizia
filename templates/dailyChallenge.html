@@ -25,7 +25,7 @@ Quizia
 			$(document).ready(function() {                
                 console.log(alreadyAttempted);
                 if(alreadyAttempted == 1){
-                    $("#content").append("<br>You have already attempted todays challange.");
+                    $("#content").append("<h3 class='homeTitle'>You have already attempted todays challange.</h3>");
                     $("#startChallenge").prop('disabled', true);
                 }
             });
@@ -47,15 +47,21 @@ Quizia
                     {			
                         console.log("failed");
                     }
-                });  
-
+                });
+                $("#startDaily").attr("style", "display:none;")
+                $("#quizQuestion").attr("style", "visibility:visible;")
                 NextQuestion();                                
             });
 
-            function NextQuestion(){
-                console.log("next question");
-                $("#quiz").html('<p id="quiz_name" name="quiz_name">...</p><br><p id="madeBy" name="madeBy">Made by: ...</p><br><p id="question" name="question"></p><br><p id="correct" name="correct"></p><img id="image" name="image "src="" alt=""><br><button class="checkbutton" type="button" id="answer1" name="answer1"></button><br> <button class="checkbutton" type="button" id="answer2" name="answer2"></button><br><button class="checkbutton" type="button" id="answer3" name="answer3"></button><br><button class="checkbutton" type="button" id="answer4" name="answer4"></button><br><p id="attempts" name="attempts">...</p><br><p id="correct_attempts" name="correct_attempts">...</p><br>   <p>Time left: </p><br>');
-                $("#correct").text("");    
+                        
+            function NextQuestion(){                
+                console.log(quiz[questionNumber].time_limit);
+                $("#quizQuestion").html('<div class="questionTop"><p class="headerLeft">Question '+(questionNumber+1)+'</p><p class="headerRight" id="score">Score: '+(correctNumber)+' out of '+(questionNumber+1)+'</p> </div><img src="" alt="asd" width="650" height="400" class="questionImage" id="image" name="image"> <p id="question" name="question" style="text-align: center;">Question</p> <div id="answers" class="answersBox"> <button class="checkbutton" type="button" id="answer1" name="answer1">Answer1</button> <button class="checkbutton" type="button" id="answer2" name="answer2">Answer2</button> <button class="checkbutton" type="button" id="answer3" name="answer3">Answer3</button> <button class="checkbutton" type="button" id="answer4" name="answer4">Answer4</button></div> <div class="remainingTime"> <p>Remaining time</p><div id="progressbar1" class="progressbar"></div> </div><div class="questionTop"><p id="results" style="text-align:center; margin:20px; padding:20px; font-weight:bold; height:70px;"></p></div><div class="questionTop"><p id="madeBy" name="madeBy" class="headerRight">Made by: testUser</p> <p id="correct_attempts" name="correct_attempts" class="headerRight">Correct attempts: 23</p> <p id="attempts" name="attempts" class="headerRight">Attempts: 43</p> </div> </div>');
+                createProgressbar('progressbar1', quiz[questionNumber].time_limit, function() {
+                    console.log('20s progressbar is finished!');
+                    CheckAnswer("incorrect");
+                });
+                $("#madeBy").text("Made by: " + quiz[0].username);      
                 $("#question").text(quiz[questionNumber].question);                
                 $('#image').attr('src', quiz[questionNumber].image);                
                 $("#answer1").text(quiz[questionNumber].answer1);
@@ -65,52 +71,73 @@ Quizia
                 $("#attempts").text("Attempts on this question: " + quiz[questionNumber].attempts);
                 $("#correct_attempts").text("Correct attempts on this question: " + quiz[questionNumber].correct_attempts);
             }
-
-            //not used?
-            $('#answer1, #answer2, #answer3, #answer4').click(function(){
-                console.log(this.id);
-                CheckAnswer(this.id);
-            })
             
-            $('#quiz').on('click', 'button.checkbutton', function(){
-                console.log(this.id);
+            $('#content').on('click', 'button.checkbutton', function(){
                 CheckAnswer(this.id);
             })
 
             function CheckAnswer(buttonId){
-                console.log("clicked on a buttoin");
                 var questionUpdate = new Object();
+                $("#innerprogress").attr("style", "animation-play-state: paused; animation-duration: "+quiz[questionNumber].time_limit+"s;")
                 questionUpdate.question_id = quiz[questionNumber].question_id;
                 questionUpdate.attempts = 1;
                 questionUpdate.correct_attempts = 0;
-                console.log(buttonId);
                 if(buttonId == quiz[questionNumber].correctAnswer){
-                    console.log("correct");
                     questionUpdate.correct_attempts = 1;
-                    $("#correct").text("correct");
+                    $("#results").text("Correct");
                     correctNumber++;
+                    $("#score").text("Score: "+(correctNumber)+" out of "+(questionNumber+1)+"")
                 } 
-                else{
-                    console.log("incorrect");
-                    $("#correct").text("incorrect");
+                else{                    
+                    $("#results").text("Incorrect");
+                    $("#score").text("Score: "+(correctNumber)+" out of "+(questionNumber+1)+"")
                 }
-
                 updateDB.questions.push(questionUpdate);
                 questionNumber++;
                 if(questionNumber >= quiz.length){
-                    console.log("no more questions");
-                    $("#correct").append(" no more questions");
+                    $("#results").append("</br>There are no more questions");
                     updateDB.numberOfQuestions = questionNumber;
-                    updateDB.correctNumber = correctNumber;
-                    $("#content").text("no more questions");
                     //no need to return json here
-                    $.getJSON('/_updateChallengedb', updateDB, function(data) {
+                    $.getJSON('/_updatedb', updateDB, function(data) {
 						//$("#content").append(data.result);
 					});
-                } else{             
-                    console.log("next question in 3...");
+                } else{
+                    $("#results").append("</br>Next question in 3 seconds.");
                     setTimeout(NextQuestion, 3000);                    
                 } 
+            }
+
+            //https://stackoverflow.com/questions/31109581/javascript-timer-progress-bar
+            function createProgressbar(id, duration, callback) {
+                // We select the div that we want to turn into a progressbar
+                //var progressbar = document.getElementById(id);
+                //progressbar.className = 'progressbar';
+                console.log(duration);
+                $("#" + id).attr('class', 'progressbar');
+            
+                // We create the div that changes width to show progress
+                var $div = $("<div>", {id: "innerprogress", "class": "inner"});
+                //var progressbarinner = document.createElement('div');
+                //progressbarinner.className = 'inner';
+            
+                // Now we set the animation parameters
+                //$($div).attr("style", "animation-duration: 5;")
+                //progressbarinner.style.animationDuration = duration;
+            
+                // Eventually couple a callback
+                //if (typeof(callback) === 'function') {
+                //    progressbarinner.addEventListener('animationend', callback);
+                //}
+                $($div).on('animationend', callback);
+
+                // Append the progressbar to the main progressbardiv
+                //progressbar.appendChild(progressbarinner);
+                $($div).attr("style", "animation-play-state: running; animation-duration: "+duration+"s;")
+
+                $("#" +id).append($div);
+            
+                // When everything is set up we start the animation
+                //progressbarinner.style.animationPlayState = 'running';                
             }
 		</script>
 	{{super()}}
@@ -127,9 +154,18 @@ Quizia
         {% include "headerTemplate.html" ignore missing %}
         {% include "navbar.html" ignore missing %}
         <div class="content" id="content">
-            The daily challange is a series of random questions.<br>The more questions you get right, the higher score you will get.<br>This score will count towards your ranking on the leaderboard.<br>You can only attempt the daily challange once a day<br>
-            <button type="button" id="startChallenge" name="startChallenge">Start challange</button>
-            <div id="quiz" name="quiz"></div>
+            <h3 class="homeTitle" id="" name="">The daily challenge</h3>
+            <div class="startDaily" id="startDaily">                
+                <p class="description">
+                    The daily challange is a series of random questions. The more questions you get right, the higher score you will get. This score will count towards your ranking on the leaderboard. You can only attempt the daily challange once a day.                
+                </p>
+                <div style="display: flex; align-items: center; justify-content: center;margin:20px;">
+                    <button style="margin:auto" type="button" id="startChallenge" name="startChallenge">Start challange</button>
+                </div>
+            </div>
+            <div id="quizQuestion" name="quizQuestion" class="quizQuestion" style="visibility: hidden;">
+
+            </div>
         </div>
     </main>   
     <footer class="footer" id="footer">

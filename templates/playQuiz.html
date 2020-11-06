@@ -11,6 +11,7 @@ Quizia
         <script type=text/javascript>            
             var quiz = {{questions|tojson}};
             var questionNumber = 0;
+            var correctNumber = 0;
 
             var updateDB = new Object();
             updateDB.questions = new Array();
@@ -23,9 +24,10 @@ Quizia
             
             function NextQuestion(){
                 console.log(quiz[questionNumber].time_limit);
-                $("#quizQuestion").html('<div class="questionTop"><p class="headerLeft">Question '+(questionNumber+1)+'</p><p class="headerRight">Score: '+(questionNumber+1)+' out of '+quiz.length+'</p> </div><img src="" alt="asd" width="650" height="400" class="questionImage" id="image" name="image"> <p id="question" name="question" style="text-align: center;">Question</p> <div id="answers" class="answersBox"> <button class="checkbutton" type="button" id="answer1" name="answer1">Answer1</button> <button class="checkbutton" type="button" id="answer2" name="answer2">Answer2</button> <button class="checkbutton" type="button" id="answer3" name="answer3">Answer3</button> <button class="checkbutton" type="button" id="answer4" name="answer4">Answer4</button></div> <div class="remainingTime"> <p>Remaining time</p><div id="progressbar1" class="progressbar"></div> </div><div class="questionTop"><p id="results" style="text-align:center; margin:20px; padding:20px; font-weight:bold; height:70px;"></p></div><div class="questionTop"><p id="madeBy" name="madeBy" class="headerRight">Made by: testUser</p> <p id="correct_attempts" name="correct_attempts" class="headerRight">Correct attempts: 23</p> <p id="attempts" name="attempts" class="headerRight">Attempts: 43</p> </div> </div>');
+                $("#quizQuestion").html('<div class="questionTop"><p class="headerLeft">Question '+(questionNumber+1)+'</p><p class="headerRight" id="score">Score: '+(correctNumber)+' out of '+(questionNumber+1)+'</p> </div><img src="" alt="asd" width="650" height="400" class="questionImage" id="image" name="image"> <p id="question" name="question" style="text-align: center;">Question</p> <div id="answers" class="answersBox"> <button class="checkbutton" type="button" id="answer1" name="answer1">Answer1</button> <button class="checkbutton" type="button" id="answer2" name="answer2">Answer2</button> <button class="checkbutton" type="button" id="answer3" name="answer3">Answer3</button> <button class="checkbutton" type="button" id="answer4" name="answer4">Answer4</button></div> <div class="remainingTime"> <p>Remaining time</p><div id="progressbar1" class="progressbar"></div> </div><div class="questionTop"><p id="results" style="text-align:center; margin:20px; padding:20px; font-weight:bold; height:70px;"></p></div><div class="questionTop"><p id="madeBy" name="madeBy" class="headerRight">Made by: testUser</p> <p id="correct_attempts" name="correct_attempts" class="headerRight">Correct attempts: 23</p> <p id="attempts" name="attempts" class="headerRight">Attempts: 43</p> </div> </div>');
                 createProgressbar('progressbar1', quiz[questionNumber].time_limit, function() {
                     console.log('20s progressbar is finished!');
+                    CheckAnswer("incorrect");
                 });
                 $("#madeBy").text("Made by: " + quiz[0].username);      
                 $("#question").text(quiz[questionNumber].question);                
@@ -51,9 +53,12 @@ Quizia
                 if(buttonId == quiz[questionNumber].correctAnswer){
                     questionUpdate.correct_attempts = 1;
                     $("#results").text("Correct");
+                    correctNumber++;
+                    $("#score").text("Score: "+(correctNumber)+" out of "+(questionNumber+1)+"")
                 } 
                 else{                    
                     $("#results").text("Incorrect");
+                    $("#score").text("Score: "+(correctNumber)+" out of "+(questionNumber+1)+"")
                 }
                 updateDB.questions.push(questionUpdate);
                 questionNumber++;
@@ -100,8 +105,7 @@ Quizia
                 $("#" +id).append($div);
             
                 // When everything is set up we start the animation
-                //progressbarinner.style.animationPlayState = 'running';
-                
+                //progressbarinner.style.animationPlayState = 'running';                
             }
 		</script>
 	{{super()}}
