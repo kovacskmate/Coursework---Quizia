@@ -1,0 +1,95 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Quizia
+{% endblock %}
+
+<head>
+    <!-- Custom Javascript loaded before Bootstrap’s javascript code: -->
+        <!-- https://embed.plnkr.co/plunk/oyaVFn -->
+    {% block scripts %}
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type=text/javascript>
+            //u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, COUNT(q.quiz_id) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score
+            var userdata = {{userdata|tojson}};
+            var achievements = {{userachievements|tojson}};
+
+            $('#editProfile').click(function(){
+                window.location.href='/editProfile';
+             });
+
+            $(document).ready(function() { 
+                $("#profPic").attr('src', userdata[0][2]);
+                $("#username").text(userdata[0][0]);
+                $("#introduction").text(userdata[0][3]);
+                $("#playedQuizzes").text(userdata[0][1]);
+                $("#challengeScore").text(userdata[0][6]);
+                $("#totalScore").text(userdata[0][7]);
+                $("#createdQuizzes").text(userdata[0][5]);
+                $("#memberSince").text(userdata[0][4]);
+
+                //a.achievement_name, a.description, a.icon
+                if(achievements.length <= 0){
+                    $("#earnedAchievements").append('<p>No achievements</p>');
+                } else{
+                    for(i = 0; i < achievements.length; i++){
+                        $("#earnedAchievements").append('<div><img class="profPic" id="profPic" name="profPic "src="' + achievements[i][2] + '" alt="itBroke" width="200" height="200"><p>' + achievements[i][1] + '</p><p>' + achievements[i][0] + '</p></div>');
+                    }
+                }  
+            });
+        </script>
+    {{super()}}
+{% endblock %}    
+</head>
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block content %}
+    <main class="main" id="main">
+        {% include "headerTemplate.html" ignore missing %}
+        {% include "navbar.html" ignore missing %}
+        <div class="content" id="content">
+            <h3 class="homeTitle" id="username">testUser's profile</h3> 
+            <div id="userprofile" class="userprofile">
+                <img class="profPic" id="profPic" name="profPic "src="" alt="itBroke" width="200" height="200">
+                <div id="userdata" class="userdata">                    
+                    <div>
+                        <h3>Introduction</h3>
+                        <p id="introduction">this is a lot of text here this is a lot of text here this is a lot of text here this is a lot of text here</p>
+                    </div>
+                    <div>
+                        <h3>Played quizzes</h3>
+                        <p id="playedQuizzes">123</p>
+                    </div>
+                    <div>
+                        <h3>Challenge score</h3>
+                        <p id="challengeScore">123</p>
+                    </div>
+                    <div>
+                        <h3>Total score</h3>
+                        <p id="totalScore">123</p>
+                    </div>
+                    <div>
+                        <h3>Created quizzes</h3>
+                        <p id="createdQuizzes">123</p>
+                    </div>
+                    <div>
+                        <h3>Member since</h3>
+                        <p id="memberSince">123</p>
+                    </div>
+                </div>
+                <h3 class="homeTitle">Earned achievements</h3> 
+                <div id="earnedAchievements" class="earnedAchievements">
+                </div>
+                <button type="button" id="editProfile">Edit profile</button>
+            </div>
+        </div>
+    </main>   
+    <footer class="footer" id="footer">
+        footer text
+    </footer> 
+{% endblock %}

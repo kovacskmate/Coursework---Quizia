@@ -1,0 +1,81 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Quizia
+{% endblock %}
+
+<head>
+	{% block scripts %}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type=text/javascript>            
+            var quizzes = {{quizzes|tojson}};
+            var page = {{page}};
+            var category = {{category|tojson}};
+            var startNumber = page * 20 - 19;
+
+            $('#nextPage').click(function(){
+                window.location.href='/categories/'+ category +'/' + (page+1);
+             });
+
+            $('#prevPage').click(function(){
+                window.location.href='/categories/'+ category +'/' + (page-1);
+            });
+
+            //q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays
+			$(document).ready(function() { 
+                if(quizzes.length <= 0){
+                    $("#popularQuizUL").append('<p>No quizzes</p>');
+                } else{
+                    for(i = 0; i < quizzes.length; i++){
+                        $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + quizzes[i][3] + '</p><p>' + quizzes[i][1] + '</p><p>' + quizzes[i][4] + '</p><p>' + quizzes[i][2] + '</p><p><a href=/play/' + quizzes[i][0] + '>Play</a></p></li>');
+                    }
+                }  
+            });
+		</script>
+	{{super()}}
+{% endblock %}    
+</head>
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block content %}
+    <main class="main" id="main">
+        {% include "headerTemplate.html" ignore missing %}
+        {% include "navbar.html" ignore missing %}
+        <div class="content" id="content">           
+            <h3 class="homeTitle">{{category}} quizzes</h3>
+            <div id="topPopularQuizzes">                
+                <div id="popularQuiz" class="popularQuiz">
+                    <ul id="popularQuizUL">
+                        <li class="flex-toplist makeBold">
+                            <p>Rank</p>
+                            <p>Name</p>
+                            <p>Category</p>
+                            <p>Plays</p>
+                            <p>Made by</p>
+                            <p>Play quiz</p>
+                        </li>
+                    </ul>                    
+                    <button type="button" id="prevPage">Previous page</button>
+                    <button type="button" id="nextPage">Next page</button>
+                </div>                
+            </div>           
+            <!-- quiz_id, c.category_name, u.username, quiz_name, plays -->
+            <!-- {% for quiz in quizzes %}
+                Quiz name: {{ quiz[3] }}
+                Quiz category: {{ quiz[1] }}
+                Quiz made by: {{ quiz[2] }}
+                {{ quiz[4] }} Plays
+                <a href="/play/{{ quiz[0] }}">Play this quiz</a>
+                <br>
+            {% endfor %} -->
+
+        </div>
+    </main>   
+    <footer class="footer" id="footer">
+        footer text
+    </footer> 
+{% endblock %}

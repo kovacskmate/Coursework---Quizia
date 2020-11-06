@@ -1,0 +1,138 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Quizia
+{% endblock %}
+
+<head>
+    <!-- qu.quiz_name, u.username, qs.question_id, qs.quiz_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts -->
+    <!-- $("#content").append("hello? : " + '{{ questions }}'); -->
+    <!-- Custom Javascript loaded before Bootstrap’s javascript code: -->
+	{% block scripts %}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type=text/javascript>  
+            //qs.question_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts          
+            var quiz = {{questions|tojson}};
+
+            var alreadyAttempted = {{alreadyAttempted|tojson}};
+            var questionNumber = 0;
+            var correctNumber = 0;
+
+            var updateDB = new Object();
+            updateDB.questions = new Array();
+
+			$(document).ready(function() {                
+                console.log(alreadyAttempted);
+                if(alreadyAttempted == 1){
+                    $("#content").append("<br>You have already attempted todays challange.");
+                    $("#startChallenge").prop('disabled', true);
+                }
+            });
+
+            $("#startChallenge").click(function () {
+                $.ajax({
+                    url: "/_addUserToChallengeProgress",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {addUser: "true"},
+                    processData: false,
+                    contentType: false,
+                    success: function (responseData)
+                    {
+                        console.log("user added to db");
+                        console.log(responseData);
+                    },
+                    error: function ()
+                    {			
+                        console.log("failed");
+                    }
+                });  
+
+                NextQuestion();                                
+            });
+
+            function NextQuestion(){
+                console.log("next question");
+                $("#quiz").html('<p id="quiz_name" name="quiz_name">...</p><br><p id="madeBy" name="madeBy">Made by: ...</p><br><p id="question" name="question"></p><br><p id="correct" name="correct"></p><img id="image" name="image "src="" alt=""><br><button class="checkbutton" type="button" id="answer1" name="answer1"></button><br> <button class="checkbutton" type="button" id="answer2" name="answer2"></button><br><button class="checkbutton" type="button" id="answer3" name="answer3"></button><br><button class="checkbutton" type="button" id="answer4" name="answer4"></button><br><p id="attempts" name="attempts">...</p><br><p id="correct_attempts" name="correct_attempts">...</p><br>   <p>Time left: </p><br>');
+                $("#correct").text("");    
+                $("#question").text(quiz[questionNumber].question);                
+                $('#image').attr('src', quiz[questionNumber].image);                
+                $("#answer1").text(quiz[questionNumber].answer1);
+                $("#answer2").text(quiz[questionNumber].answer2);
+                $("#answer3").text(quiz[questionNumber].answer3);
+                $("#answer4").text(quiz[questionNumber].answer4);  
+                $("#attempts").text("Attempts on this question: " + quiz[questionNumber].attempts);
+                $("#correct_attempts").text("Correct attempts on this question: " + quiz[questionNumber].correct_attempts);
+            }
+
+            //not used?
+            $('#answer1, #answer2, #answer3, #answer4').click(function(){
+                console.log(this.id);
+                CheckAnswer(this.id);
+            })
+            
+            $('#quiz').on('click', 'button.checkbutton', function(){
+                console.log(this.id);
+                CheckAnswer(this.id);
+            })
+
+            function CheckAnswer(buttonId){
+                console.log("clicked on a buttoin");
+                var questionUpdate = new Object();
+                questionUpdate.question_id = quiz[questionNumber].question_id;
+                questionUpdate.attempts = 1;
+                questionUpdate.correct_attempts = 0;
+                console.log(buttonId);
+                if(buttonId == quiz[questionNumber].correctAnswer){
+                    console.log("correct");
+                    questionUpdate.correct_attempts = 1;
+                    $("#correct").text("correct");
+                    correctNumber++;
+                } 
+                else{
+                    console.log("incorrect");
+                    $("#correct").text("incorrect");
+                }
+
+                updateDB.questions.push(questionUpdate);
+                questionNumber++;
+                if(questionNumber >= quiz.length){
+                    console.log("no more questions");
+                    $("#correct").append(" no more questions");
+                    updateDB.numberOfQuestions = questionNumber;
+                    updateDB.correctNumber = correctNumber;
+                    $("#content").text("no more questions");
+                    //no need to return json here
+                    $.getJSON('/_updateChallengedb', updateDB, function(data) {
+						//$("#content").append(data.result);
+					});
+                } else{             
+                    console.log("next question in 3...");
+                    setTimeout(NextQuestion, 3000);                    
+                } 
+            }
+		</script>
+	{{super()}}
+{% endblock %}    
+</head>
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block content %}
+    <main class="main" id="main">
+        {% include "headerTemplate.html" ignore missing %}
+        {% include "navbar.html" ignore missing %}
+        <div class="content" id="content">
+            The daily challange is a series of random questions.<br>The more questions you get right, the higher score you will get.<br>This score will count towards your ranking on the leaderboard.<br>You can only attempt the daily challange once a day<br>
+            <button type="button" id="startChallenge" name="startChallenge">Start challange</button>
+            <div id="quiz" name="quiz"></div>
+        </div>
+    </main>   
+    <footer class="footer" id="footer">
+        footer text
+    </footer> 
+{% endblock %}

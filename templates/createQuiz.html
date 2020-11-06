@@ -1,0 +1,118 @@
+	<!-- {% extends "bootstrap/base.html" %}
+	{% import "bootstrap/wtf.html" as wtf %} -->
+
+	{% block title %}
+	Quizia
+	{% endblock %}
+
+	<head>
+		<!-- Custom Javascript loaded before Bootstrap’s javascript code: -->
+			<!-- https://embed.plnkr.co/plunk/oyaVFn -->
+		{% block scripts %}
+			<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+			<script type=text/javascript>
+				var questionNumber = 0;		
+
+				$(document).ready(function() {								
+					$.getJSON('/_getcategories', function(data) {
+						for (i = 0; i < data.result.length; i++) {
+							var category = new Option(data.result[i][1], data.result[i][0]);
+							$(category).html(data.result[i][1]);
+							$("#selectCategory").append(category)
+						}
+					});
+					AddQuestion();
+				});
+
+				$("#addQuestion").click(function () {
+					AddQuestion();
+				});
+
+				$("#saveQuizToDB").click(function () {
+					GetAndSaveQuiz();
+				});
+
+				function AddQuestion(){
+					questionNumber++;
+					$("#questions").append('<div id="question' + questionNumber + '" class="question"><h3>Question ' + questionNumber + ':</h3><label for="">Question</label><input type="text" name="questionQ' + questionNumber + '" id="questionQ' + questionNumber + '"><label for="">Answer1</label><input type="text" name="answer1' + questionNumber + '" id="answer1' + questionNumber + '"><label for="">Answer2</label><input type="text" name="answer2' + questionNumber + '" id="answer2' + questionNumber + '"> <label for="">Answer3</label><input type="text" name="answer3' + questionNumber + '" id="answer3' + questionNumber + '"><label for="">Answer4</label><input type="text" name="answer4' + questionNumber + '" id="answer4' + questionNumber + '"><div class="questionSection"><label for="">Question image</label><input type="file" name="image' + questionNumber + '" id="image' + questionNumber + '"><label for="">Correct answer</label> <select name="correctAnswer' + questionNumber + '" id="correctAnswer' + questionNumber + '"><option value="-1">...</option> <option value="answer1">a</option><option value="answer2">b</option><option value="answer3">c</option><option value="answer4">d</option></select><br><label for="">Time limit</label> <input type="text" name="timeLimit' + questionNumber + '" id="timeLimit' + questionNumber + '"></div></div>');
+					document.getElementById('numberOfQuestions').value = questionNumber;
+				}
+
+				function GetAndSaveQuiz(){   
+					$.ajax({
+						url: "/_saveQuizToDB",
+						type: "POST",
+						dataType: "JSON",
+						data: new FormData(document.getElementById("form")),
+						processData: false,
+						contentType: false,
+						success: function (responseData)
+						{
+							console.log("success");
+							console.log(responseData);
+							$("#results").append("quiz saved");
+						},
+						error: function (responseData)
+						{	
+							console.log(responseData)						
+							console.log("failed");
+						}
+					});  
+				}								
+			</script>
+		{{super()}}
+	{% endblock %}    
+	</head>
+
+	{% block styles %}
+	{{super()}}
+	<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+	{% endblock %}
+
+
+	{% block content %}
+		<main class="main" id="main">
+			{% include "headerTemplate.html" ignore missing %}
+			{% include "navbar.html" ignore missing %}
+			<div class="content">
+				<h3 class="homeTitle">Create a quiz</h3>
+				<div id="quizCreator" class="quizCreator">
+					<form id="form" name="form" method="POST" enctype="multipart/form-data">
+						<input type="text" name="numberOfQuestions" id="numberOfQuestions" style="visibility: hidden;">
+						<label for="">Quiz name</label>
+						<input type="text" name="quizName" id="quizName">
+						<label for="">Select category</label>
+						<select name="selectCategory" id="selectCategory">
+							<option value="-1">...</option>
+						</select>						
+						<div id="questions" class="questions">
+
+						</div>
+						<button type="button" id="addQuestion">Add question</button>
+						<button type="button" id="saveQuizToDB">Save</button>
+					</form>
+					<div id="results"></div>
+				<!-- <form id="form" name="form" method="POST" enctype="multipart/form-data">
+					<input type="text" name="numberOfQuestions" id="numberOfQuestions" style="visibility: hidden;">
+					<label for="">quiz name</label>
+					<input type="text" name="quizName" id="quizName">
+					<label for="">select category</label>
+					<select name="selectCategory" id="selectCategory">
+						<option value="-1">...</option>
+					</select><br>
+					
+					<div id="questions">
+						
+					</div>
+					<button type="button" id="addQuestion">Add question</button>
+					<button type="button" id="saveQuizToDB">Save</button>
+				</form>
+				<div id="results"></div> -->
+			</div>
+		</main>   
+		<footer class="footer" id="footer">
+			footer text
+		</footer> 
+	{% endblock %}
+
+

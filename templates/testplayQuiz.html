@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="style.css">  
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {								
+            createProgressbar('progressbar1', '20s', function() {
+                console.log('20s progressbar is finished!');
+              });
+        });
+        //https://stackoverflow.com/questions/31109581/javascript-timer-progress-bar
+        function createProgressbar(id, duration, callback) {
+            // We select the div that we want to turn into a progressbar
+            var progressbar = document.getElementById(id);
+            progressbar.className = 'progressbar';
+        
+            // We create the div that changes width to show progress
+            var progressbarinner = document.createElement('div');
+            progressbarinner.className = 'inner';
+        
+            // Now we set the animation parameters
+            progressbarinner.style.animationDuration = duration;
+        
+            // Eventually couple a callback
+            if (typeof(callback) === 'function') {
+            progressbarinner.addEventListener('animationend', callback);
+            }
+        
+            // Append the progressbar to the main progressbardiv
+            progressbar.appendChild(progressbarinner);
+        
+            // When everything is set up we start the animation
+            progressbarinner.style.animationPlayState = 'running';
+        }
+    </script>
+
+</head>
+<body>    
+    <main class="main" id="main">
+        <header class="header" id="header">
+            <div class="headerLeft">
+                <img src="" alt="logo">
+            </div>
+            <div class="headerRight">
+                <img src="" alt="">
+                {{ name }}          
+            </div>
+        </header>
+        <aside class="sidebar">
+            <nav class="nav">
+                <hr class="divider">
+              <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Categories</a></li>
+                <li><a href="#">Random quiz</a></li>                
+                <li><a href="#">Create a quiz</a></li>
+                <li><a href="#">Popular</a></li>
+                <li><a href="#">The daily challange</a></li>
+                <li><a href="#">Achievements</a></li>                
+              </ul>
+              <hr class="divider">
+              <ul>
+                <li><a href="#">My quizzes</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Sign out</a></li>               
+              </ul>
+            </nav>
+        </aside>
+        <div class="content" id="content">    
+            <h3 class="homeTitle" id="quiz_name" name="quiz_name">Quiz name</h3>
+            <div class="quizQuestion">
+                <div class="questionTop">
+                    <p class="headerLeft">Question 5</p>
+                    <p class="headerRight">Score: 5 out of 10</p>
+                </div>    
+                <img src="Bullethell42.PNG" alt="asd" width="650" height="400" class="questionImage">          
+
+                <p id="question" name="question" style="text-align: center;">Question</p>
+                <!-- <p id="correct" name="correct"></p> -->
+                <div id="answers" class="answersBox">
+                    <button class="checkbutton" type="button" id="answer1" name="answer1">Answer1</button>
+                    <button class="checkbutton" type="button" id="answer2" name="answer2">Answer2</button>
+                    <button class="checkbutton" type="button" id="answer3" name="answer3">Answer3</button>
+                    <button class="checkbutton" type="button" id="answer4" name="answer4">Answer4</button>
+                </div>
+
+                <div class="remainingTime">
+                    <p>Remaining time</p>
+                    <div id='progressbar1'></div>
+                </div>               
+                <div class="questionTop">
+                    <p id="madeBy" name="madeBy" class="headerRight">Made by: testUser</p>                    
+                    <p id="correct_attempts" name="correct_attempts" class="headerRight">Correct attempts: 23</p>
+                    <p id="attempts" name="attempts" class="headerRight">Attempts: 43</p>                    
+                </div> 
+            </div>            
+        </div>
+    </main>   
+    <footer class="footer" id="footer">
+        footer text
+    </footer> 
+</body>
+</html>

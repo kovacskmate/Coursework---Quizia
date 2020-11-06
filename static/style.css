@@ -1,0 +1,554 @@
+html, body{
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+}
+body{
+  color: #fff;
+  margin: 0;
+  padding: 0; 
+  font-family: 'Open Sans', sans-serif;
+}
+
+.header {
+  top: 0;
+  background-color: #333;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 17pt;
+  overflow: hidden;
+}
+.headerLeft{
+  padding-left: 10px;
+  float:left;
+}
+.headerRight{
+  padding-right: 10px;
+  float: right;
+}
+
+.test{
+  float:left
+}
+
+.footer{
+  position: absolute;
+  width: 100%;
+  background-color: #333;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 17pt;
+  text-align: center;
+}
+
+.footerBottom{
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  background-color: #333;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 17pt;
+  text-align: center;
+}
+
+.main{  
+  background-color: #444;
+  margin-top: 0px;
+  padding-top: 0px;
+  display: flex 0 0 auto;
+}
+
+.content{
+  min-height: 1000px;
+  margin-left: 230px;
+  background-color: #ffffff;
+  color: black;
+}
+
+.testButton{
+  width: 50px;
+}
+
+.login{
+  overflow: hidden;
+  background-color: black;
+  padding: 40px 30px 30px 30px;
+  /* border-radius: 10px; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  transform: translate(-50%, -50%)
+}
+
+input{
+  display: block;
+  /* border-radius: 5px; */
+  font-size: 16px;
+  background: white;
+  width: 100%;
+  border: 0;
+  padding: 10px 10px;
+  margin: 15px -10px;
+}
+
+.loginButton {
+  color: black;
+  cursor: pointer;
+  font-size: 16px;
+  text-transform: uppercase;
+  width: fit-content;
+  border: 0;
+  padding: 10px 10px;
+  margin-top: 10px;
+  margin-left: -5px;
+  float: left;
+  /* border-radius: 5px;   */
+}
+.registerButton {
+  color: black;
+  cursor: pointer;
+  font-size: 16px;
+  text-transform: uppercase;
+  width: fit-content;
+  border: 0;
+  padding: 10px 10px;
+  margin-top: 10px;
+  margin-left: -5px;
+  float: right;
+  /* border-radius: 5px;   */
+}
+
+/* testing  */
+.nav{
+  width: 230px;
+  float: left;
+}
+
+.nav ul{
+  list-style: none;
+  padding: 0.0em 0;
+  margin-top: 0px;
+  margin-bottom: 50px;
+}
+
+.nav ul li{
+  padding-left: 30px; 
+  padding-top: 10px;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
+.nav ul a li{
+  color: white;
+  font-size: 16px;
+  /* text-transform: uppercase; */
+  font-weight: bold;
+  text-decoration: none;  
+}
+
+.nav ul li:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+hr.divider{ 
+   margin-top: 0em;
+   margin-bottom: 0em;
+   border-width: 2px;
+} 
+
+hr.divider {
+  border: 2px solid white;
+}
+
+
+
+/* top players on home page */
+
+.topPlayers{
+  border-radius: 5px;
+  margin: auto;
+  width: 80%;
+  box-shadow: 0 0 6px 4px grey;
+}
+
+.homeTitle{
+  text-align: center;
+  font-size: 30px;
+  margin: 0px;
+  padding: 20px;
+}
+
+.first{
+  text-align: center;
+}
+
+.first .topPlayerInfo h1{
+  font-size: 22px;
+}
+
+.first .topPlayerInfo p{
+  font-size: 20px;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.flex-container div {
+  flex: 1;
+}
+
+.topPlayerInfo{
+
+}
+
+.topPlayerInfo p{
+  text-align: center;
+}
+
+.topPlayerInfo h1{
+  font-size: 20px;
+  text-align: center;
+}
+
+.info-container{
+  display: flex;
+  
+}
+.info-container p {  
+  flex: 1;
+  font-size: 18px;
+  
+}
+
+.info-container h1 {  
+  font-size: 18px;
+  text-align: left;
+  margin-left: 20px;
+}
+
+/* top players on home page */
+
+/* popular quizzes home page */
+
+.popularQuiz{
+  margin: auto;
+  width: 80%;
+  font-size: 18px;
+  border-radius: 5px;
+  box-shadow: 0 0 6px 4px grey;
+  margin-bottom: 30px;
+}
+
+.popularQuiz ul{
+  margin: 0px;
+  padding: 0px;
+  list-style-type: none;
+}
+
+.popularQuiz ul li{
+  margin: 0px;
+  padding: 5px;
+}
+
+.flex-toplist{
+  display: flex;
+}
+
+.makeBold{
+  font-weight: bold;
+}
+
+.flex-toplist p{
+  flex: 1;
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+}
+
+/* popular quizzes home page */
+
+/* categoires */
+
+.categories{
+  border-radius: 5px;
+  box-shadow: 0 0 6px 4px grey;
+  margin: auto;
+  width: 80%;
+  display: flex;
+  flex-wrap: wrap;
+}
+.categories a{
+  padding: auto;
+  flex-grow: 1;
+  width: 30%;
+  padding-top: 20px;
+  margin: 5px;
+  padding-bottom: 20px;
+  text-align: center;
+  align-items: center;
+  /* border: 2px solid black; */
+}
+
+.categories a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* categoires */
+
+/* userprofile */
+
+.userprofile{
+  border-radius: 5px;
+  box-shadow: 0 0 6px 4px grey;
+  margin: auto;
+  width: 90%;
+  padding-bottom: 10px;
+}
+
+.profPic{
+  margin: auto;
+  padding-top: 15px;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.username{
+  text-align: center;
+}
+
+.userdata{  
+  margin: auto;
+  margin-top: 10px;
+  width: 97%;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 5px;
+  box-shadow: 0 0 6px 4px grey;
+}
+
+.userdata div{
+  padding: auto;
+  flex-grow: 1;
+  width: 30%;  
+  margin: 10px;  
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-align: center;
+  align-items: center;
+  border-radius: 5px;
+  box-shadow: 0 9px 0px 0px white, 0 -9px 0px 0px white, -4px 0 5px -4px grey;
+}
+
+.userdata div p{
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.userdata h3{
+  margin-top:10px;
+}
+
+/* userprofile */
+
+/* achievements */
+
+.earnedAchievements{
+  margin: auto;
+  width: 97%;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 5px;
+  box-shadow: 0 0 6px 4px grey;
+}
+
+.earnedAchievements div{
+  flex-grow: 1;
+  width: 30%;
+}
+
+.earnedAchievements p{
+  text-align: center;
+}
+
+/* achievements */
+
+/* create a quiz */
+
+.quizCreator{
+  margin: auto;
+  width: 97%;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 5px;
+  box-shadow: 0 0 6px 4px grey;
+}
+
+.question{
+  width: 100%;
+  border-radius: 5px;
+  box-shadow: 0 0 6px 4px grey;
+  margin-bottom: 10px;
+}
+
+.quizCreator label{
+  padding-left: 10px;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.quizCreator form{
+  width: 97%;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+.quizCreator form input{
+  width: 98%;
+  padding: 1px;
+  margin: 10px;
+  height: 30px;
+  border-radius: 5px;
+  box-shadow: 0 0 2px 1px grey;
+}
+
+.questionSection{
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+/* create a quiz */
+
+.hidden{
+  visibility: hidden;
+}
+
+.displayBlock{
+  display: inline-block;
+}
+
+.quizQuestion{
+  width: 96%;
+  border-radius: 5px;
+  box-shadow: 0 0 6px 4px grey;  
+  margin: auto;
+}
+
+.questionTop{
+  overflow: hidden;
+}
+
+.questionImage{
+  margin: auto;
+  padding-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.answersBox{
+  display: flex;
+  flex-wrap: wrap;
+  width: 70%;
+  margin: auto;
+}
+
+.answersBox button{
+  flex-grow: 1;
+  width: 48%;
+  height: 40px;
+  margin: 10px;
+}
+
+/* https://stackoverflow.com/questions/31109581/javascript-timer-progress-bar */
+.progressbar {
+  width: 80%;
+  margin: auto;
+  border-radius: 5px;
+  border: solid 2px #000;
+  background-color: red;
+}
+.progressbar .inner {
+  height: 15px;
+  animation: progressbar-countdown;
+  /* Placeholder, this will be updated using javascript */
+  animation-duration: 40s;
+  /* We stop in the end */
+  animation-iteration-count: 1;
+  /* Stay on pause when the animation is finished finished */
+  animation-fill-mode: forwards;
+  /* We start paused, we start the animation using javascript */
+  animation-play-state: paused;
+  /* We want a linear animation, ease-out is standard */
+  animation-timing-function: linear;
+}
+@keyframes progressbar-countdown {
+  0% {
+    width: 100%;
+    background: #0F0;
+  }
+  100% {
+    width: 0%;
+    background: #0F0;
+  }
+}
+
+.remainingTime p{
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  font-weight: bold;
+}
+
+.startDaily p{
+  width: 60%;
+  text-align: center;
+  margin: auto;
+}
+
+.uploadProfilepic{
+  display:flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.uploadProfilepic input{
+  width: 40% !important;
+  padding: 1px;
+  margin: 10px;
+}
+
+.introduction label{
+  padding-left: 10px;
+  padding-top: 10px;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.introduction input{
+  white-space: nowrap;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 0px;
+  font-weight: bold;  
+  min-width: 98%;
+  max-width: 99%;
+  height: 30px;
+  border-radius: 5px;
+  box-shadow: 0 0 2px 1px grey;
+}
+
+.userprofile form button{
+  margin-left: 10px;
+}
+

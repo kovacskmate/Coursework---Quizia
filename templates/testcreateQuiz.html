@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>    
+    <main class="main" id="main">
+        <header class="header" id="header">
+            <div class="headerLeft">
+                <img src="" alt="logo">
+            </div>
+            <div class="headerRight">
+                <img src="" alt="">
+                {{ name }}          
+            </div>
+        </header>
+        <aside class="sidebar">
+            <nav class="nav">
+                <hr class="divider">
+              <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Categories</a></li>
+                <li><a href="#">Random quiz</a></li>                
+                <li><a href="#">Create a quiz</a></li>
+                <li><a href="#">Popular</a></li>
+                <li><a href="#">The daily challange</a></li>
+                <li><a href="#">Achievements</a></li>                
+              </ul>
+              <hr class="divider">
+              <ul>
+                <li><a href="#">My quizzes</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Sign out</a></li>               
+              </ul>
+            </nav>
+        </aside>
+        <div class="content" id="content">    
+            <h3 class="homeTitle">Create a quiz</h3>
+            <div id="quizCreator" class="quizCreator">
+                <form id="form" name="form" method="POST" enctype="multipart/form-data">
+                    <input type="text" name="numberOfQuestions" id="numberOfQuestions" style="visibility: hidden;">
+                    <label for="">Quiz name</label>
+                    <input type="text" name="quizName" id="quizName">
+                    <label for="">Select category</label>
+                    <select name="selectCategory" id="selectCategory">
+                        <option value="-1">...</option>
+                    </select><br>
+                    
+                    <div id="questions" class="questions">
+                        <div id="question1" class="question">
+                            <h3>Question1:</h3> 
+                            <label for=''>Question</label>
+                            <input type='text' name='questionQ"+ questionNumber+"' id='questionQ"+ questionNumber+"'>                                
+                            <label for=''>Answer1</label><input type='text' name='answer1"+ questionNumber+"' id='answer1"+ questionNumber+"'>
+                            <label for=''>Answer2</label><input type='text' name='answer2"+ questionNumber+"' id='answer2"+ questionNumber+"'>
+                            <label for=''>Answer3</label><input type='text' name='answer3"+ questionNumber+"' id='answer3"+ questionNumber+"'>
+                            <label for=''>Answer4</label><input type='text' name='answer4"+ questionNumber+"' id='answer4"+ questionNumber+"'>
+                            <div class="questionSection">
+                                <label for=''>Question image</label>
+                                <input type='file' name='image"+ questionNumber +"' id='image"+ questionNumber +"'> 
+                                <label for='' >Correct answer</label>
+                                <select name='correctAnswer"+ questionNumber+"' id='correctAnswer"+ questionNumber+"'>
+                                    <option value='-1'>...</option>
+                                    <option value='answer1'>a</option>
+                                    <option value='answer2'>b</option>
+                                    <option value='answer3'>c</option>
+                                    <option value='answer4'>d</option>
+                                </select><br>
+                                <label for=''>Time limit</label>
+                                <input type='text' name='timeLimit"+ questionNumber+"' id='timeLimit"+ questionNumber+"'>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="addQuestion">Add question</button>
+                    <button type="button" id="saveQuizToDB">Save</button>
+                </form>
+                <div id="results"></div>
+            </div>
+        </div>
+    </main>   
+    <footer class="footer" id="footer">
+        footer text
+    </footer> 
+</body>
+</html>

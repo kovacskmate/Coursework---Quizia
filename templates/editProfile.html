@@ -1,0 +1,85 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Quizia
+{% endblock %}
+
+<head>
+	{% block scripts %}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type=text/javascript> 
+            var userdata = {{userdata|tojson}};
+            //u.username, u.profile_pic, u.introduction 
+            $(document).ready(function() { 
+                $("#profPic").attr('src', userdata[0][1]);
+                $("#username").text(userdata[0][0]);
+                $('#introduction').attr('placeholder', userdata[0][2]);
+            });            
+
+            $("#saveUserdata").click(function () {
+                SaveUserdataToDB();
+            });
+            
+            function SaveUserdataToDB(){ 
+                $.ajax({
+                   url: "/_saveUserdataToDB",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: new FormData(document.getElementById("form")),
+                    processData: false,
+                    contentType: false,
+                    success: function (responseData)
+                    {
+                        console.log("success");
+                        console.log(responseData);
+                        $("#results").append("userdata saved");
+                        $("#intro").text($("#introduction").val())
+                        var reader = new FileReader();
+                        reader.readAsDataURL(document.getElementById("image").files[0]);
+                        reader.onload = function (event){
+                            document.getElementById("profPic").src = event.target.result;
+                        };
+                    },
+                    error: function ()
+                    {							
+                        console.log("failed");
+                    }
+                });  
+            }			
+		</script>
+	{{super()}}
+{% endblock %}    
+</head>
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block content %}
+    <main class="main" id="main">
+        {% include "headerTemplate.html" ignore missing %}
+        {% include "navbar.html" ignore missing %}
+        <div class="content" id="content">
+            <h3 class="homeTitle" id="username"></h3> 
+            <div id="userprofile" class="userprofile">
+                <img class="profPic" id="profPic" name="profPic "src="Bullethell42.PNG" alt="itBroke" width="200" height="200">      
+                <form id="form" name="form" method="POST" enctype="multipart/form-data">
+                    <div class="uploadProfilepic">
+                        <label for="">Change profile picture</label>
+                        <input type="file" id="image" name="image">                   
+                    </div>
+                    <div class="introduction">
+                        <label for="">Introduction:</label>
+                        <input type="text" id="introduction" name="introduction">                        
+                    </div>                    
+                    <button type="button" id="saveUserdata">Save</button>
+                </form>
+            </div>
+        </div>
+    </main>   
+    <footer class="footer" id="footer">
+        footer text
+    </footer> 
+{% endblock %}

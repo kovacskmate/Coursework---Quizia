@@ -1,0 +1,99 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Quizia
+{% endblock %}
+
+<head>
+	{% block scripts %}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type=text/javascript>            
+            var popular = {{popularQuizzes|tojson}};
+            var newQ = {{newestQuizzes|tojson}};
+            var top3players = {{top3players|tojson}};
+
+            //q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays
+			$(document).ready(function() { 
+                if(popular.length <= 0){
+                    $("#popularQuizUL").append('<p>No quizzes yet</p>');
+                } else{
+                    for(i = 0; i < popular.length; i++){
+                        $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (i+1) +'.</p><p>' + popular[i][3] + '</p><p>' + popular[i][1] + '</p><p>' + popular[i][4] + '</p><p>' + popular[i][2] + '</p><p><a href=/play/"' + popular[i][0] + '">Play</a></p></li>')
+                    }
+                }  
+                
+                if(newQ.length <= 0){
+                    $("#newQUL").append('<p>No quizzes yet</p>');
+                } else{
+                    for(i = 0; i < newQ.length; i++){
+                        $("#newQUL").append('<li class="flex-toplist"><p>' + (i+1) +'.</p><p>' + newQ[i][3] + '</p><p>' + newQ[i][1] + '</p><p>' + newQ[i][4] + '</p><p>' + newQ[i][2] + '</p><p><a href=/play/"' + newQ[i][0] + '">Play</a></p></li>')
+                    }
+                }
+
+                //id, username, score, numberofachievements, played_quizzes, challenge score
+                if(top3players.length <= 0){
+                    $("#first").append('<p>No players yet</p>');
+                } else{
+                    for(i = 0; i < top3players.length; i++){
+                        $("#first").append('<div id="topPlayerInfo" class="topPlayerInfo"><div class="info-container"><h1>' + (i+1) + '. <a href="">' + top3players[i][1] + '</a></h1><h1>Total score: ' + top3players[i][2] + '</h1></div><div class="info-container"><p>' + top3players[i][3] + ' Achievements</p> <p>Played quizzes: ' + top3players[i][4] + '</p><p>Challenge score: ' + top3players[i][5] + '</p></div></div>');
+                    }
+                }
+            });
+		</script>
+	{{super()}}
+{% endblock %}    
+</head>
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block content %}
+    <main class="main" id="main">
+        {% include "headerTemplate.html" ignore missing %}
+        {% include "navbar.html" ignore missing %}
+        <div class="content" id="content">
+            <h3 class="homeTitle">Most popular quizzes</h3>
+            <div id="topPopularQuizzes">                
+                <div id="popularQuiz" class="popularQuiz">
+                    <ul id="popularQuizUL">
+                        <li class="flex-toplist makeBold">
+                            <p>Rank</p>
+                            <p>Name</p>
+                            <p>Category</p>
+                            <p>Plays</p>
+                            <p>Made by</p>                            
+                            <p>Play quiz</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <h3 class="homeTitle">New quizzes</h3>
+            <div id="topPopularQuizzes">                
+                <div id="popularQuiz" class="popularQuiz">
+                    <ul id="newQUL">
+                        <li class="flex-toplist makeBold">
+                            <p>Rank</p>
+                            <p>Name</p>
+                            <p>Category</p>
+                            <p>Plays</p>
+                            <p>Made by</p>
+                            <p>Play quiz</p>
+                        </li>
+                    </ul>
+                </div>
+            </div> 
+            <h3 class="homeTitle">The top three players</h3>
+            <div id="topPlayers" name="topPlayers" class="topPlayers">                
+                <div id="first" class="first">
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>   
+    <footer class="footer" id="footer">
+        footer text
+    </footer> 
+{% endblock %}

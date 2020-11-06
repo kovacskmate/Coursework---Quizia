@@ -1,0 +1,76 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Quizia
+{% endblock %}
+
+<head>
+	{% block scripts %}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type=text/javascript>            
+            var players = {{users|tojson}};
+            var page = {{page}};
+            console.log(page);
+            var startNumber = page * 20 - 19;
+
+            $('#nextPage').click(function(){
+                window.location.href='/leaderboard/' + (page+1);
+             });
+
+            $('#prevPage').click(function(){
+                window.location.href='/leaderboard/' + (page-1);
+            });
+
+            //id, username, score, numberofachievements, played_quizzes, challenge score
+			$(document).ready(function() { 
+                if(players.length <= 0){
+                    $("#playersUL").append('<p>No players</p>');
+                } else{
+                    for(i = 0; i < players.length; i++){
+                        $("#playersUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p><a href="">' + players[i][1] + '</a></p><p>' + players[i][4] + '</p><p>' + players[i][3] + '</p><p>' + players[i][5] + '</p><p>' + players[i][2] + '</p></li>');
+                    }
+                }  
+            });
+		</script>
+	{{super()}}
+{% endblock %}    
+</head>
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block content %}
+    <main class="main" id="main">
+        {% include "headerTemplate.html" ignore missing %}
+        {% include "navbar.html" ignore missing %}
+        <div class="content" id="content">
+            <h3 class="homeTitle">Leaderboard</h3>
+            <div id="topPopularQuizzes">                
+                <div id="popularQuiz" class="popularQuiz">
+                    <ul id="playersUL">
+                        <li class="flex-toplist makeBold">
+                            <p>Rank</p>
+                            <p>Name</p>
+                            <p>Played quizzes</p>
+                            <p>Earned achievements</p>
+                            <p>Challenge score</p>
+                            <p>Total score</p>
+                        </li>
+                    </ul>
+                    <button type="button" id="prevPage">Previous page</button>
+                    <button type="button" id="nextPage">Next page</button>
+                </div>
+            </div> 
+            <!-- {% for user in users %}
+            username: {{ user[0] }}<br>
+            score: {{ user[1] }}<br>            
+        {% endfor %} -->
+        </div>
+    </main>   
+    <footer class="footer" id="footer">
+        footer text
+    </footer> 
+{% endblock %}

@@ -1,0 +1,21 @@
+<aside class="sidebar">
+    <nav class="nav">
+        <hr class="divider">
+        <ul>
+            <a href="{{ url_for('home') }}"><li>Home</li></a>
+            <a href="{{ url_for('categories') }}"><li>Categories</li></a>
+            <a href="{{ url_for('randomQuiz') }}"><li>Random quiz</li></a>                
+            <a href="{{ url_for('createQuiz') }}"><li>Create a quiz</li></a>
+            <a href="{{ url_for('popular', page=1) }}"><li>Popular</li></a>
+            <a href="{{ url_for('dailyChallenge') }}"><li>The daily challange</li></a>
+            <a href="{{ url_for('achievements') }}"><li>Achievements</li></a>     
+            <a href="{{ url_for('leaderboard', page=1) }}"><li>Leaderboard</li></a>       
+        </ul>
+        <hr class="divider">
+        <ul>
+        <a href="{{ url_for('myQuizzes', page=1) }}"><li>My quizzes</li></a>
+        <a href="{{ url_for('myProfile') }}"><li>Profile</li></a>
+        <a href="{{ url_for('logout') }}"><li>Sign out</li></a>           
+        </ul>
+    </nav>
+</aside>
