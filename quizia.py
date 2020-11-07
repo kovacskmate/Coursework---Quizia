@@ -288,6 +288,7 @@ def playedQuizzes(achievement_id, condition):
             result = "didn't meet condition"
     return str(result)
 
+#todo validate
 @app.route('/_saveQuizToDB', methods=['GET', 'POST'])
 @login_required
 def _saveQuizToDB(): 
