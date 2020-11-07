@@ -156,13 +156,13 @@ def play(quiz_id):
     db = get_db() 
     cur = db.cursor()  
     #increase how many times the quiz has been played
-    sql = "UPDATE quizzes SET plays = plays + 1 WHERE quiz_id = "+ quiz_id +""
-    cur.execute(sql)
+    sql = "UPDATE quizzes SET plays = plays + 1 WHERE quiz_id = {}"
+    cur.execute(sql.format(quiz_id))
     db.commit()    
     #get all questions in quiz    
-    sql = "SELECT qu.quiz_name, u.username, qs.question_id, qs.quiz_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts FROM questions qs JOIN quizzes qu ON qs.quiz_id = qu.quiz_id JOIN user u ON qu.user_id = u.id WHERE qs.quiz_id = " + quiz_id + ""
+    sql = "SELECT qu.quiz_name, u.username, qs.question_id, qs.quiz_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts FROM questions qs JOIN quizzes qu ON qs.quiz_id = qu.quiz_id JOIN user u ON qu.user_id = u.id WHERE qs.quiz_id = {}"
     questions = []    
-    cur.execute(sql)
+    cur.execute(sql.format(quiz_id))
     #idea from https://stackoverflow.com/questions/3286525/return-sql-table-as-json-in-python
     r = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
     userid = current_user.id
@@ -291,42 +291,66 @@ def playedQuizzes(achievement_id, condition):
 #todo validate
 @app.route('/_saveQuizToDB', methods=['GET', 'POST'])
 @login_required
-def _saveQuizToDB(): 
-    response = ''
+def _saveQuizToDB():
+    # response = ''
     f = request.form
-    for key in f.keys():
-        for value in f.getlist(key):
-            response = response + key + ":" + value + "||"    
-    db = get_db()
-    cursor = db.cursor()
-    sql = "INSERT INTO quizzes (category_id, user_id, quiz_name, plays) VALUES (" + f['selectCategory']+ ", (SELECT id FROM user WHERE username = '" + current_user.username + "'), '" + f['quizName']+ "', 0)"
-    cursor.execute(sql)
-    quiz_id = cursor.lastrowid
-    db.commit()
+    # for key in f.keys():
+    #     for value in f.getlist(key):
+    #         response = response + key + ":" + value + "||"    
+    if validateQuiz(f):
+        try:
+            db = get_db()
+            cursor = db.cursor()
+            sql = "INSERT INTO quizzes (category_id, user_id, quiz_name, plays) VALUES ({}, '{}', '{}', 0)"
+            cursor.execute(sql.format(f['selectCategory'], current_user.id, f['quizName']))
+            quiz_id = cursor.lastrowid
+            db.commit()
 
-    questionsToSave = []
-    for i in range(int(f['numberOfQuestions'])):
-        questionQ = []
-        questionQ.append(quiz_id)        
-        questionQ.append(f['questionQ' + str(i + 1)])
-        questionQ.append(f['timeLimit' + str(i + 1)])
-        file = request.files['image' + str(i + 1)]
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        questionQ.append('/static/questionImages/' + filename)
-        questionQ.append(f['answer1' + str(i + 1)])
-        questionQ.append(f['answer2' + str(i + 1)])
-        questionQ.append(f['answer3' + str(i + 1)])
-        questionQ.append(f['answer4' + str(i + 1)])
-        questionQ.append(f['correctAnswer' + str(i + 1)])
-        questionQ.append('0')
-        questionQ.append('0')               
-        questionsToSave.append(questionQ)
-    db = get_db()
-    cursor = db.cursor()
-    cursor.executemany("INSERT INTO questions (quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(?,?,?,?,?,?,?,?,?,?,?);", questionsToSave)
-    db.commit()
-    return jsonify(f['numberOfQuestions'])
+            questionsToSave = []
+            for i in range(int(f['numberOfQuestions'])):
+                questionQ = []
+                questionQ.append(quiz_id)        
+                questionQ.append(f['questionQ' + str(i + 1)])
+                questionQ.append(f['timeLimit' + str(i + 1)])
+                file = request.files['image' + str(i + 1)]
+
+                filename = secure_filename(file.filename)
+                if allowed_file(filename):
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                else:
+                    raise Exception("")
+                questionQ.append('/static/questionImages/' + filename)
+                questionQ.append(f['answer1' + str(i + 1)])
+                questionQ.append(f['answer2' + str(i + 1)])
+                questionQ.append(f['answer3' + str(i + 1)])
+                questionQ.append(f['answer4' + str(i + 1)])
+                questionQ.append(f['correctAnswer' + str(i + 1)])
+                questionQ.append('0')
+                questionQ.append('0')               
+                questionsToSave.append(questionQ)
+            db = get_db()
+            cursor = db.cursor()
+            cursor.executemany("INSERT INTO questions (quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(?,?,?,?,?,?,?,?,?,?,?);", questionsToSave)
+            db.commit()
+            return jsonify(f['numberOfQuestions'])
+        except:
+            return jsonify("failed saving")
+    else:
+        return jsonify("failed validation")
+
+def validateQuiz(f):
+    valid = True
+    if not f['quizName']:
+        valid = False
+    else:
+        for i in range(int(f['numberOfQuestions'])):
+            if not f['questionQ' + str(i + 1)] or not f['answer1' + str(i + 1)] or not f['answer2' + str(i + 1)] or not f['answer3' + str(i + 1)] or not f['answer4' + str(i + 1)]:
+                valid = False
+                break
+            if int(f['timeLimit' + str(i + 1)]) <= 0 or int(f['timeLimit' + str(i + 1)]) > 999:
+                valid = False
+                break
+    return valid
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
