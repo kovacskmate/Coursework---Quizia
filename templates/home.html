@@ -36,7 +36,7 @@ Quizia
                     $("#first").append('<p>No players yet</p>');
                 } else{
                     for(i = 0; i < top3players.length; i++){
-                        $("#first").append('<div id="topPlayerInfo" class="topPlayerInfo"><div class="info-container"><h1>' + (i+1) + '. <a href="">' + top3players[i][1] + '</a></h1><h1>Total score: ' + top3players[i][2] + '</h1></div><div class="info-container"><p>' + top3players[i][3] + ' Achievements</p> <p>Played quizzes: ' + top3players[i][4] + '</p><p>Challenge score: ' + top3players[i][5] + '</p></div></div>');
+                        $("#first").append('<div id="topPlayerInfo" class="topPlayerInfo"><div class="info-container"><h1>' + (i+1) + '. <a href="/profile/' + top3players[i][0]+'">' + top3players[i][1] + '</a></h1><h1>Total score: ' + top3players[i][2] + '</h1></div><div class="info-container"><p>' + top3players[i][3] + ' Achievements</p> <p>Played quizzes: ' + top3players[i][4] + '</p><p>Challenge score: ' + top3players[i][5] + '</p></div></div>');
                     }
                 }
             });

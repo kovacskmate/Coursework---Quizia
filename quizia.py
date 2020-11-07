@@ -63,14 +63,12 @@ atexit.register(lambda: scheduler.shutdown())
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db' #vm: 'sqlite:///database/quizia.db' # sqlalcehmy needs to know where the database is located as well
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db' # sqlalcehmy needs to know where the database is located as well
 
-#todo: there was a bug where the database got locked for some reason
+#todo: generate secret key
 #todo: change wherever string is concatted to sql
 #todo: resize uploaded images
-#todo: rename UPLOAD_FOLDER
 #todo: uploaded image names should be unique
-#todo: add a first quiz in the schema with at least 10 questions
 
 UPLOAD_FOLDER = 'Quizia\static\questionImages' #vm: 'static/questionImages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -126,10 +124,12 @@ def get_db():
     return db
 
 @app.route('/')
+@login_required
 def index():   
     return redirect(url_for('home'))
 
 @app.route('/listusers')
+@login_required
 def listusers():
     db = get_db()
     page = []
@@ -140,6 +140,7 @@ def listusers():
     return ''.join(page)
 
 @app.route('/querydatabase')
+@login_required
 def listcategories():
     db = get_db()
     page = []
@@ -150,6 +151,7 @@ def listcategories():
     return ''.join(page)
 
 @app.route('/play/<quiz_id>')
+@login_required
 def play(quiz_id):
     db = get_db() 
     cur = db.cursor()  
@@ -168,6 +170,7 @@ def play(quiz_id):
     return render_template('playQuiz.html', questions=r, name=current_user.username, userid=userid)
 
 @app.route('/categories')
+@login_required
 def categories():
     db = get_db()
     categories = []
@@ -177,6 +180,7 @@ def categories():
     return render_template('categories.html', categories=categories, name=current_user.username)
 
 @app.route('/categories/<category>/<page>')
+@login_required
 def categoriesCategory(category, page):
     db = get_db()
     startLimit = int(page) * 20 - 20
@@ -187,6 +191,7 @@ def categoriesCategory(category, page):
     return render_template('category.html', quizzes=quizzes, name=current_user.username, category=category, page=page)    
 
 @app.route('/randomQuiz')
+@login_required
 def randomQuiz():
     db = get_db()    
     sql = "SELECT quiz_id FROM quizzes ORDER BY RANDOM() LIMIT 1"
@@ -194,11 +199,13 @@ def randomQuiz():
     return redirect(url_for('play', quiz_id=quiz_id))  
 
 @app.route('/createQuiz')
+@login_required
 def createQuiz():
     return render_template('createQuiz.html', name=current_user.username, categories=categories)
 
 #todo: if page < 1 or page > table length return error
 @app.route('/popular/<page>')
+@login_required
 def popular(page):
     db = get_db()
     sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id ORDER BY q.plays DESC LIMIT {}, {}"
@@ -210,6 +217,7 @@ def popular(page):
 
 #todo: if page < 1 or page > table length return error
 @app.route('/myQuizzes/<page>')
+@login_required
 def myQuizzes(page):
     db = get_db()
     sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id WHERE q.user_id = {} LIMIT {}, {}"
@@ -221,6 +229,7 @@ def myQuizzes(page):
 
 #todo: if page < 1 or page > table length return error
 @app.route('/leaderboard/<page>')
+@login_required
 def leaderboard(page):
     db = get_db()
     startLimit = int(page) * 20 - 20
@@ -231,6 +240,7 @@ def leaderboard(page):
     return render_template('leaderboard.html', users=users, name=current_user.username, page=page) 
 
 @app.route('/achievements')
+@login_required
 def achievements():
     db = get_db()
     sql = "SELECT * FROM achievements"
@@ -240,6 +250,7 @@ def achievements():
     return render_template('achievements.html', achievements=achievements, name=current_user.username)   
 
 @app.route('/_checkForAchievements')
+@login_required
 def _checkForAchievements():
     result = checkForAchievements()
     return result
@@ -278,6 +289,7 @@ def playedQuizzes(achievement_id, condition):
     return str(result)
 
 @app.route('/_saveQuizToDB', methods=['GET', 'POST'])
+@login_required
 def _saveQuizToDB(): 
     response = ''
     f = request.form
@@ -319,6 +331,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/_updatedb')
+@login_required
 def _updatedb():
     db = get_db()
     whatToUpdate = request.args    
@@ -336,7 +349,8 @@ def _updatedb():
     return jsonify(result=page)
 
 @app.route('/_updateChallengedb')
-def _updateChallengedb():
+@login_required
+def _updateChallengedb():    
     db = get_db()
     whatToUpdate = request.args    
     page = []
@@ -353,18 +367,25 @@ def _updateChallengedb():
 
     return jsonify(result=page)
 
-#todo should be /profile/<user_id> instead
-@app.route('/myProfile')
-def myProfile():
+@app.route('/profile/<id>')
+@login_required
+def profile(id):
     db = get_db()
+    if id == 'me' or int(id) == current_user.id:
+        userid = current_user.id
+        remove = 0
+    else:
+        userid = id
+        remove = 1
     sql = "SELECT u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, COUNT(q.quiz_id) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score FROM user u JOIN quizzes q ON u.id = {}"
-    userdata = db.cursor().execute(sql.format(current_user.id)).fetchall()       
+    userdata = db.cursor().execute(sql.format(userid)).fetchall()       
     sql = "SELECT a.achievement_name, a.description, a.icon FROM achievements a JOIN earned_achievements e ON a.achievement_id = e.achievement_id WHERE e.user_id = {}"
-    userachievements = db.cursor().execute(sql.format(current_user.id)).fetchall()
-    return render_template('myProfile.html', name=current_user.username, userdata=userdata, userachievements=userachievements)
+    userachievements = db.cursor().execute(sql.format(userid)).fetchall()
+    return render_template('profile.html', name=current_user.username, userdata=userdata, userachievements=userachievements, remove=remove)
 
 #todo: if input is left empty on editProfile.html then introduction should not be saved
 @app.route('/editProfile')
+@login_required
 def editProfile():
     db = get_db()
     sql = "SELECT u.username, u.profile_pic, u.introduction FROM user u WHERE u.id = {}"
@@ -372,6 +393,7 @@ def editProfile():
     return render_template('editProfile.html', name=current_user.username, userdata=userdata)
 
 @app.route('/dailyChallenge')
+@login_required
 def dailyChallenge():
     db = get_db() 
     cur = db.cursor()  
@@ -388,6 +410,7 @@ def dailyChallenge():
         return render_template('dailyChallenge.html', questions=r, alreadyAttempted="empty", name=current_user.username) 
 
 @app.route('/_addUserToChallengeProgress', methods=['GET', 'POST'])
+@login_required
 def _addUserToChallengeProgress():
     db = get_db() 
     sql = "INSERT INTO challenge_progress (user_id, challenge_progress) VALUES ({},{})"
@@ -402,6 +425,7 @@ def _createDailyChallenge():
 
 #todo: uploaded image names should be unique
 @app.route('/_saveUserdataToDB', methods=['GET', 'POST'])
+@login_required
 def _saveUserdataToDB(): 
     response = ''
     f = request.form
@@ -421,6 +445,7 @@ def _saveUserdataToDB():
     return jsonify(response)
 
 @app.route('/_getcategories')
+@login_required
 def _getcategories():
     db = get_db()
     categories = []

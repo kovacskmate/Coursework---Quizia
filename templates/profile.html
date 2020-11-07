@@ -14,12 +14,17 @@ Quizia
             //u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, COUNT(q.quiz_id) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score
             var userdata = {{userdata|tojson}};
             var achievements = {{userachievements|tojson}};
+            var remove = {{remove}};
+            console.log(remove);
 
             $('#editProfile').click(function(){
                 window.location.href='/editProfile';
              });
 
             $(document).ready(function() { 
+                if(remove == 1){
+                    $('#editProfile').remove();
+                }
                 $("#profPic").attr('src', userdata[0][2]);
                 $("#username").text(userdata[0][0]);
                 $("#introduction").text(userdata[0][3]);

@@ -14,7 +14,7 @@
         <hr class="divider">
         <ul>
         <a href="{{ url_for('myQuizzes', page=1) }}"><li>My quizzes</li></a>
-        <a href="{{ url_for('myProfile') }}"><li>Profile</li></a>
+        <a href="{{ url_for('profile', id='me') }}"><li>Profile</li></a>
         <a href="{{ url_for('logout') }}"><li>Sign out</li></a>           
         </ul>
     </nav>
