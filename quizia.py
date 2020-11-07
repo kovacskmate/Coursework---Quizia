@@ -11,6 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from apscheduler.schedulers.background import BackgroundScheduler
+from PIL import Image
 
 def checkForAchievements():
     with app.app_context():
@@ -66,20 +67,21 @@ app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db' # sqlalcehmy needs to know where the database is located as well
 
 #todo: generate secret key
-#todo: change wherever string is concatted to sql
-#todo: resize uploaded images
+#todo: make queries secure
+#todo validate edit profile input
+#todo: resize profile pictures before upload
 #todo: uploaded image names should be unique
 
-UPLOAD_FOLDER = 'Quizia\static\questionImages' #vm: 'static/questionImages'
+UPLOAD_FOLDER = 'Quizia\static\questionImages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-UPLOAD_FOLDER2 = 'Quizia\static\profilePictures'#vm: 'static/profilePictures'
+UPLOAD_FOLDER2 = 'Quizia\static\profilePictures'
 app.config['UPLOAD_FOLDER2'] = UPLOAD_FOLDER2
 
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
-db_location = 'Quizia\database\quizia.db' #vm: "database/quizia.db"
+db_location = 'Quizia\database\quizia.db'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login' # this is where @login_required redirects to if there is no user logged in
@@ -145,9 +147,12 @@ def listcategories():
     db = get_db()
     page = []
     page.append(' ')
-    sql = "SELECT * FROM challenge_progress"
-    for row in db.cursor().execute(sql):
-        page.append(str(row)) 
+    sql = "SELECT category_id FROM categories"
+    categoryIDs = db.cursor().execute(sql).fetchall()
+    for item in categoryIDs:
+        page.append(str(item[0]))
+    # for row in db.cursor().execute(sql):
+    #     page.append(str(row)) 
     return ''.join(page)
 
 @app.route('/play/<quiz_id>')
@@ -155,18 +160,15 @@ def listcategories():
 def play(quiz_id):
     db = get_db() 
     cur = db.cursor()  
-    #increase how many times the quiz has been played
     sql = "UPDATE quizzes SET plays = plays + 1 WHERE quiz_id = {}"
     cur.execute(sql.format(quiz_id))
-    db.commit()    
-    #get all questions in quiz    
+    db.commit()        
     sql = "SELECT qu.quiz_name, u.username, qs.question_id, qs.quiz_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts FROM questions qs JOIN quizzes qu ON qs.quiz_id = qu.quiz_id JOIN user u ON qu.user_id = u.id WHERE qs.quiz_id = {}"
     questions = []    
     cur.execute(sql.format(quiz_id))
     #idea from https://stackoverflow.com/questions/3286525/return-sql-table-as-json-in-python
     r = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
     userid = current_user.id
-    #why is userid sent?
     return render_template('playQuiz.html', questions=r, name=current_user.username, userid=userid)
 
 @app.route('/categories')
@@ -288,69 +290,94 @@ def playedQuizzes(achievement_id, condition):
             result = "didn't meet condition"
     return str(result)
 
-#todo validate
 @app.route('/_saveQuizToDB', methods=['GET', 'POST'])
 @login_required
 def _saveQuizToDB():
-    # response = ''
-    f = request.form
-    # for key in f.keys():
-    #     for value in f.getlist(key):
-    #         response = response + key + ":" + value + "||"    
-    if validateQuiz(f):
-        try:
-            db = get_db()
-            cursor = db.cursor()
-            sql = "INSERT INTO quizzes (category_id, user_id, quiz_name, plays) VALUES ({}, '{}', '{}', 0)"
-            cursor.execute(sql.format(f['selectCategory'], current_user.id, f['quizName']))
-            quiz_id = cursor.lastrowid
-            db.commit()
+    f = request.form  
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        sql = "SELECT category_id FROM categories"
+        categoryIDs = cursor.execute(sql).fetchall()
+        #quizname cannot be empty        
+        if not f['quizName']:
+            raise Exception("quiz name was empty")
+        #selectcategory cannot be empty, has to be in category table id
+        categoryExists = False
+        if not f['selectCategory']:
+            raise Exception("no category selected")
+        for item in categoryIDs:
+            if int(f['selectCategory']) == item[0]:
+                categoryExists = True
+                break
+        if not categoryExists:
+            raise Exception("category does not exist")
+        
+        #number of questions cannot be empty, has to be a number, and be bigger than 1
+        if not f['numberOfQuestions']:
+            raise Exception("number of questions was empty")
+        elif not f['numberOfQuestions'].isdigit():
+            raise Exception("number of questions was not a number")
+        elif int(f['numberOfQuestions']) < 1:
+            raise Exception("there were no questions")
 
-            questionsToSave = []
-            for i in range(int(f['numberOfQuestions'])):
-                questionQ = []
-                questionQ.append(quiz_id)        
+        sql = "INSERT INTO quizzes (category_id, user_id, quiz_name, plays) VALUES ({}, '{}', '{}', 0)"
+        cursor.execute(sql.format(f['selectCategory'], current_user.id, f['quizName']))        
+        quiz_id = cursor.lastrowid 
+
+        questionsToSave = []        
+        for i in range(int(f['numberOfQuestions'])):            
+            questionQ = []
+            questionQ.append(quiz_id)
+            if not f['questionQ' + str(i + 1)]:
+                raise Exception("question was empty")
+            else:
                 questionQ.append(f['questionQ' + str(i + 1)])
-                questionQ.append(f['timeLimit' + str(i + 1)])
-                file = request.files['image' + str(i + 1)]
 
-                filename = secure_filename(file.filename)
-                if allowed_file(filename):
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                else:
-                    raise Exception("")
-                questionQ.append('/static/questionImages/' + filename)
+            if not f['answer1' + str(i + 1)] or not f['answer2' + str(i + 1)] or not f['answer3' + str(i + 1)] or not f['answer4' + str(i + 1)]:
+                raise Exception("answer was empty")
+            else:
                 questionQ.append(f['answer1' + str(i + 1)])
                 questionQ.append(f['answer2' + str(i + 1)])
                 questionQ.append(f['answer3' + str(i + 1)])
                 questionQ.append(f['answer4' + str(i + 1)])
-                questionQ.append(f['correctAnswer' + str(i + 1)])
-                questionQ.append('0')
-                questionQ.append('0')               
-                questionsToSave.append(questionQ)
-            db = get_db()
-            cursor = db.cursor()
-            cursor.executemany("INSERT INTO questions (quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(?,?,?,?,?,?,?,?,?,?,?);", questionsToSave)
-            db.commit()
-            return jsonify(f['numberOfQuestions'])
-        except:
-            return jsonify("failed saving")
-    else:
-        return jsonify("failed validation")
 
-def validateQuiz(f):
-    valid = True
-    if not f['quizName']:
-        valid = False
-    else:
-        for i in range(int(f['numberOfQuestions'])):
-            if not f['questionQ' + str(i + 1)] or not f['answer1' + str(i + 1)] or not f['answer2' + str(i + 1)] or not f['answer3' + str(i + 1)] or not f['answer4' + str(i + 1)]:
-                valid = False
-                break
-            if int(f['timeLimit' + str(i + 1)]) <= 0 or int(f['timeLimit' + str(i + 1)]) > 999:
-                valid = False
-                break
-    return valid
+            file = request.files['image' + str(i + 1)]
+            if not file.filename:
+                questionQ.append('noImage')
+            else:
+                filename = secure_filename(file.filename)
+                if allowed_file(filename):
+                    image = Image.open(request.files['image' + str(i + 1)])                   
+                    size = (640, 360)
+                    image = image.resize(size)
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    questionQ.append('/static/questionImages/' + filename)
+                else:
+                    raise Exception("wrong file format")
+
+            if f['correctAnswer' + str(i + 1)] == "answer1" or f['correctAnswer' + str(i + 1)] == "answer2" or f['correctAnswer' + str(i + 1)] == "answer3" or f['correctAnswer' + str(i + 1)] == "answer4":
+                questionQ.append(f['correctAnswer' + str(i + 1)])                 
+            else:                
+                raise Exception("unexpected correct answer")
+
+            if not f['timeLimit' + str(i + 1)]:
+                raise Exception("time limit was empty")
+            elif not f['timeLimit' + str(i + 1)].isdigit():
+                raise Exception("time limit was not a number")
+            elif int(f['timeLimit' + str(i + 1)]) < 1 or int(f['timeLimit' + str(i + 1)]) > 999:
+                raise Exception("time limit was not in accepted range")
+            else:
+                questionQ.append(f['timeLimit' + str(i + 1)])
+
+            questionQ.append('0')
+            questionQ.append('0')
+            questionsToSave.append(questionQ)      
+        cursor.executemany("INSERT INTO questions (quiz_id, question, answer1, answer2, answer3, answer4, image, correctAnswer, time_limit, attempts, correct_attempts) VALUES(?,?,?,?,?,?,?,?,?,?,?);", questionsToSave)
+        db.commit()
+        return jsonify(f['numberOfQuestions'])
+    except Exception as inst:        
+        return jsonify(str(inst))
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

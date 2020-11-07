@@ -38,7 +38,7 @@
 
 				function AddQuestion(){
 					questionNumber++;
-					$("#questions").append('<div id="question' + questionNumber + '" class="question"><h3>Question ' + questionNumber + ':</h3><label for="">Question</label><input type="text" name="questionQ' + questionNumber + '" id="questionQ' + questionNumber + '" required><label for="">Answer1</label><input type="text" name="answer1' + questionNumber + '" id="answer1' + questionNumber + '" required><label for="">Answer2</label><input type="text" name="answer2' + questionNumber + '" id="answer2' + questionNumber + '" required> <label for="">Answer3</label><input type="text" name="answer3' + questionNumber + '" id="answer3' + questionNumber + '" required><label for="">Answer4</label><input type="text" name="answer4' + questionNumber + '" id="answer4' + questionNumber + '" required><div class="questionSection"><label for="">Question image</label><input type="file" accept="image/x-png,image/jpg,image/jpeg" name="image' + questionNumber + '" id="image' + questionNumber + '" required><label for="">Correct answer</label> <select name="correctAnswer' + questionNumber + '" id="correctAnswer' + questionNumber + '" required><option value="">...</option> <option value="answer1">a</option><option value="answer2">b</option><option value="answer3">c</option><option value="answer4">d</option></select><br><label for="">Time limit</label> <input type="number" min="1" max="999" name="timeLimit' + questionNumber + '" id="timeLimit' + questionNumber + '" required></div></div>');
+					$("#questions").append('<div id="question' + questionNumber + '" class="question"><h3>Question ' + questionNumber + ':</h3><label for="">Question</label><input type="text" name="questionQ' + questionNumber + '" id="questionQ' + questionNumber + '"  ><label for="">Answer1</label><input type="text" name="answer1' + questionNumber + '" id="answer1' + questionNumber + '"  ><label for="">Answer2</label><input type="text" name="answer2' + questionNumber + '" id="answer2' + questionNumber + '"  > <label for="">Answer3</label><input type="text" name="answer3' + questionNumber + '" id="answer3' + questionNumber + '"  ><label for="">Answer4</label><input type="text" name="answer4' + questionNumber + '" id="answer4' + questionNumber + '"  ><div class="questionSection"><label for="">Question image</label><input type="file" accept="image/x-png,image/jpg,image/jpeg" name="image' + questionNumber + '" id="image' + questionNumber + '"  ><label for="">Correct answer</label> <select name="correctAnswer' + questionNumber + '" id="correctAnswer' + questionNumber + '"  ><option value="">...</option> <option value="answer1">a</option><option value="answer2">b</option><option value="answer3">c</option><option value="answer4">d</option></select><br><label for="">Time limit</label> <input type="number" min="1" max="999" name="timeLimit' + questionNumber + '" id="timeLimit' + questionNumber + '"  ></div></div>');
 					document.getElementById('numberOfQuestions').value = questionNumber;
 				}
 
@@ -52,14 +52,13 @@
 						contentType: false,
 						success: function (responseData)
 						{
-							console.log("success");
 							console.log(responseData);
-							$("#results").append("Quiz succesfully saved ");
+							$("#results").append(responseData);
 							//handle server side validation error here
 						},
 						error: function (responseData)
 						{	
-							$("#results").append("Saving quiz failed ");
+							$("#results").append(responseData);
 						}
 					});  
 				}								
@@ -84,9 +83,9 @@
 					<form id="form" name="form" enctype="multipart/form-data" action="">
 						<input type="text" name="numberOfQuestions" id="numberOfQuestions" style="visibility: hidden;">
 						<label for="">Quiz name</label>
-						<input type="text" name="quizName" id="quizName" required>
+						<input type="text" name="quizName" id="quizName"  >
 						<label for="">Select category</label>
-						<select name="selectCategory" id="selectCategory" required>
+						<select name="selectCategory" id="selectCategory"  >
 							<option value="">...</option>
 						</select>						
 						<div id="questions" class="questions">
