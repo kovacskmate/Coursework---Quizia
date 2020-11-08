@@ -31,19 +31,23 @@ Quizia
                     contentType: false,
                     success: function (responseData)
                     {
-                        console.log("success");
-                        console.log(responseData);
-                        $("#results").append("userdata saved");
-                        $("#intro").text($("#introduction").val())
-                        var reader = new FileReader();
-                        reader.readAsDataURL(document.getElementById("image").files[0]);
-                        reader.onload = function (event){
-                            document.getElementById("profPic").src = event.target.result;
-                        };
+                        if(responseData == "1"){
+                            $("#results").append("Saved");
+                            $("#intro").text($("#introduction").val())
+                            var reader = new FileReader();
+                            if (document.getElementById("image").files[0] != null){
+                                reader.readAsDataURL(document.getElementById("image").files[0]);
+                                reader.onload = function (event){
+                                    document.getElementById("profPic").src = event.target.result;
+                                };  
+                            }                                                                                     
+                        } else{
+                            $("#results").append(responseData);
+                        }                     
                     },
-                    error: function ()
-                    {							
-                        console.log("failed");
+                    error: function (responseData)
+                    {						
+                        $("#results").append(responseData);
                     }
                 });  
             }			
@@ -76,6 +80,9 @@ Quizia
                     </div>                    
                     <button type="button" id="saveUserdata">Save</button>
                 </form>
+            </div>
+            <div id="results">
+
             </div>
         </div>
     </main>   

@@ -1,5 +1,5 @@
 from flask import Flask, g 
-import sqlite3, os, atexit, time, schedule, random
+import sqlite3, os, atexit, time, schedule, random, uuid
 from flask import Flask, render_template, redirect, url_for, jsonify, request, session, make_response, json, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm 
@@ -68,9 +68,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db' # sqlalce
 
 #todo: generate secret key
 #todo: make queries secure
-#todo validate edit profile input
-#todo: resize profile pictures before upload
-#todo: uploaded image names should be unique
 
 UPLOAD_FOLDER = 'Quizia\static\questionImages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -147,10 +144,10 @@ def listcategories():
     db = get_db()
     page = []
     page.append(' ')
-    sql = "SELECT category_id FROM categories"
+    sql = "SELECT u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, (SELECT COUNT(*) FROM quizzes q WHERE q.user_id = 1) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = 1) * 15) as score FROM user u WHERE u.id = 1"
     categoryIDs = db.cursor().execute(sql).fetchall()
     for item in categoryIDs:
-        page.append(str(item[0]))
+        page.append(str(item))
     # for row in db.cursor().execute(sql):
     #     page.append(str(row)) 
     return ''.join(page)
@@ -351,8 +348,8 @@ def _saveQuizToDB():
                     image = Image.open(request.files['image' + str(i + 1)])                   
                     size = (640, 360)
                     image = image.resize(size)
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                    questionQ.append('/static/questionImages/' + filename)
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], uuid.uuid4().hex + filename))
+                    questionQ.append('/static/questionImages/' + uuid.uuid4().hex + filename)
                 else:
                     raise Exception("wrong file format")
 
@@ -390,11 +387,9 @@ def _updatedb():
     page = []
     for item in whatToUpdate:
         page.append(item + " " + whatToUpdate[item] + "<br>")
-
     for i in range(int(whatToUpdate['numberOfQuestions'])):
         sql = "UPDATE questions SET attempts = attempts + 1, correct_attempts = correct_attempts + " + whatToUpdate['questions[' + str(i) + '][correct_attempts]'] + " WHERE question_id = " + whatToUpdate['questions[' + str(i) + '][question_id]'] + ""
-        db.cursor().execute(sql)
-    
+        db.cursor().execute(sql)    
     sql = "UPDATE user SET played_quizzes = played_quizzes + 1 WHERE username = '" + current_user.username + "'"
     db.cursor().execute(sql)
     db.commit()
@@ -408,15 +403,12 @@ def _updateChallengedb():
     page = []
     for item in whatToUpdate:
         page.append(item + " " + whatToUpdate[item] + "<br>")
-
     for i in range(int(whatToUpdate['numberOfQuestions'])):
         sql = "UPDATE questions SET attempts = attempts + 1, correct_attempts = correct_attempts + " + whatToUpdate['questions[' + str(i) + '][correct_attempts]'] + " WHERE question_id = " + whatToUpdate['questions[' + str(i) + '][question_id]'] + ""
-        db.cursor().execute(sql)
-    
+        db.cursor().execute(sql)    
     sql = "UPDATE user SET challenge_score = challenge_score + {} WHERE username = '" + current_user.username + "'"
     db.cursor().execute(sql.format(whatToUpdate['correctNumber']))
-    db.commit()    
-
+    db.commit()
     return jsonify(result=page)
 
 @app.route('/profile/<id>')
@@ -429,13 +421,12 @@ def profile(id):
     else:
         userid = id
         remove = 1
-    sql = "SELECT u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, COUNT(q.quiz_id) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score FROM user u JOIN quizzes q ON u.id = {}"
-    userdata = db.cursor().execute(sql.format(userid)).fetchall()       
+    sql = "SELECT u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, (SELECT COUNT(*) FROM quizzes q WHERE q.user_id = {}) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = {}) * 15) as score FROM user u WHERE u.id = {}"
+    userdata = db.cursor().execute(sql.format(userid, userid, userid)).fetchall()       
     sql = "SELECT a.achievement_name, a.description, a.icon FROM achievements a JOIN earned_achievements e ON a.achievement_id = e.achievement_id WHERE e.user_id = {}"
     userachievements = db.cursor().execute(sql.format(userid)).fetchall()
     return render_template('profile.html', name=current_user.username, userdata=userdata, userachievements=userachievements, remove=remove)
 
-#todo: if input is left empty on editProfile.html then introduction should not be saved
 @app.route('/editProfile')
 @login_required
 def editProfile():
@@ -443,6 +434,53 @@ def editProfile():
     sql = "SELECT u.username, u.profile_pic, u.introduction FROM user u WHERE u.id = {}"
     userdata = db.cursor().execute(sql.format(current_user.id)).fetchall()
     return render_template('editProfile.html', name=current_user.username, userdata=userdata)
+
+#todo: uploaded image names should be unique
+@app.route('/_saveUserdataToDB', methods=['GET', 'POST'])
+@login_required
+def _saveUserdataToDB(): 
+    f = request.form
+    try:                 
+        db = get_db()
+        cursor = db.cursor()
+        file = request.files['image']
+        if not f['introduction'] and not file.filename:
+            raise Exception("nothing to be saved")
+        if not f['introduction'] and file.filename:
+            filename = secure_filename(file.filename)
+            if allowed_file(filename):
+                image = Image.open(request.files['image'])                   
+                size = (400, 400)
+                image = image.resize(size)
+                image.save(os.path.join(app.config['UPLOAD_FOLDER2'], uuid.uuid4().hex + filename))
+                filePath = '/static/profilePictures/' + uuid.uuid4().hex + filename
+                sql = "UPDATE user SET profile_pic = '{}' WHERE id = {}"
+                cursor.execute(sql.format(filePath, current_user.id))    
+                db.commit()
+            else:
+                raise Exception("wrong file format")
+        elif f['introduction'] and not file.filename:
+            introduction = f['introduction']
+            sql = "UPDATE user SET introduction = '{}' WHERE id = {}"
+            cursor.execute(sql.format(introduction, current_user.id))    
+            db.commit()
+        else:
+            introduction = f['introduction']
+            filename = secure_filename(file.filename)
+            if allowed_file(filename):
+                image = Image.open(request.files['image'])                   
+                size = (400, 400)
+                image = image.resize(size)
+                image.save(os.path.join(app.config['UPLOAD_FOLDER2'], uuid.uuid4().hex + filename))
+                filePath = '/static/profilePictures/' + uuid.uuid4().hex + filename
+                sql = "UPDATE user SET profile_pic = '{}', introduction = '{}' WHERE id = {}"
+                cursor.execute(sql.format(filePath, introduction, current_user.id))    
+                db.commit()
+            else:
+                raise Exception("wrong file format")
+        return jsonify("1")
+    except Exception as inst:        
+        return jsonify(str(inst))
 
 @app.route('/dailyChallenge')
 @login_required
@@ -474,27 +512,6 @@ def _addUserToChallengeProgress():
 def _createDailyChallenge():
     results = createDailyChallenge()
     return results
-
-#todo: uploaded image names should be unique
-@app.route('/_saveUserdataToDB', methods=['GET', 'POST'])
-@login_required
-def _saveUserdataToDB(): 
-    response = ''
-    f = request.form
-    for key in f.keys():
-        for value in f.getlist(key):
-            response = response + key + ":" + value + "||"  
-    db = get_db()
-    cursor = db.cursor()
-    introduction = f['introduction']
-    file = request.files['image']
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER2'], filename))
-    filePath = '/static/profilePictures/' + filename        
-    sql = "UPDATE user SET profile_pic = '" + filePath + "', introduction = '" + introduction + "' WHERE id = {}"
-    cursor.execute(sql.format(current_user.id))    
-    db.commit()
-    return jsonify(response)
 
 @app.route('/_getcategories')
 @login_required
@@ -556,4 +573,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='192.168.1.101', port=3232, debug=True)
