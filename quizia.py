@@ -67,6 +67,8 @@ app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db' # sqlalcehmy needs to know where the database is located as well
 
 #todo: generate secret key
+#todo: better templating
+#todo: improve editProfile validation
 #todo: make queries secure
 
 UPLOAD_FOLDER = 'Quizia\static\questionImages'
@@ -202,41 +204,46 @@ def randomQuiz():
 def createQuiz():
     return render_template('createQuiz.html', name=current_user.username, categories=categories)
 
-#todo: if page < 1 or page > table length return error
+def paging(page, sql, template):
+    db = get_db() 
+    cur = db.cursor()  
+    sql = sql
+    startLimit = int(page) * 20 - 20
+    result = cur.execute(sql.format(startLimit,20))    
+    rowcount = result.fetchone()
+    data = []
+    if rowcount is None and int(page) == 1:
+        return render_template(template, name=current_user.username, data=data, page=page)
+    elif rowcount is None and int(page) != 0:
+        return "404"
+    elif int(page) < 1:
+        return "404"
+    else:
+        for item in cur.execute(sql.format(startLimit, 20)):
+            data.append(item)
+        return render_template(template, name=current_user.username, data=data, page=page)
+
+
 @app.route('/popular/<page>')
 @login_required
-def popular(page):
-    db = get_db()
+def popular(page):  
     sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id ORDER BY q.plays DESC LIMIT {}, {}"
-    popular = []
-    startLimit = int(page) * 20 - 20
-    for quiz in db.cursor().execute(sql.format(startLimit,20)):
-        popular.append(quiz)
-    return render_template('popularQuizzes.html', name=current_user.username, popular=popular, page=page)
+    template = 'popularQuizzes.html'
+    return paging(page, sql, template)
 
-#todo: if page < 1 or page > table length return error
 @app.route('/myQuizzes/<page>')
 @login_required
-def myQuizzes(page):
-    db = get_db()
-    sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id WHERE q.user_id = {} LIMIT {}, {}"
-    myquizzes = []
-    startLimit = int(page) * 20 - 20
-    for quiz in db.cursor().execute(sql.format(current_user.id, startLimit, 20)):
-        myquizzes.append(quiz)
-    return render_template('myQuizzes.html', name=current_user.username, myquizzes=myquizzes, page=page)
+def myQuizzes(page):    
+    sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id WHERE q.user_id = " + str(current_user.id) + " LIMIT {}, {}"
+    template = 'myQuizzes.html'
+    return paging(page, sql, template)
 
-#todo: if page < 1 or page > table length return error
 @app.route('/leaderboard/<page>')
 @login_required
 def leaderboard(page):
-    db = get_db()
-    startLimit = int(page) * 20 - 20
     sql = "SELECT u.id, u.username, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score, (SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) as numberOfAchievements, u.played_quizzes, u.challenge_score FROM user u ORDER BY score DESC LIMIT {}, {}"
-    users = []       
-    for user in db.cursor().execute(sql.format(startLimit, 20)):
-        users.append(user)
-    return render_template('leaderboard.html', users=users, name=current_user.username, page=page) 
+    template = 'leaderboard.html'
+    return paging(page, sql, template)
 
 @app.route('/achievements')
 @login_required
