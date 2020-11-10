@@ -11,6 +11,7 @@ Quizia
         <script type=text/javascript>            
             var myQuizzes = {{data|tojson}};
             var page = {{page}};
+            var disableNext = {{disableNext}};
             console.log(page);
             var startNumber = page * 20 - 19;
 
@@ -30,7 +31,14 @@ Quizia
                     for(i = 0; i < myQuizzes.length; i++){
                         $("#myQuizzesUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + myQuizzes[i][3] + '</p><p>' + myQuizzes[i][1] + '</p><p>' + myQuizzes[i][4] + '</p><p>' + myQuizzes[i][2] + '</p><p><a href=/play/' + myQuizzes[i][0] + '>Play</a></p></li>');
                     }
-                }  
+                } 
+                
+                if (page == 1){
+                    $("#prevPage").prop('disabled', true);
+                }
+                if(disableNext == 1){
+                    $("#nextPage").prop('disabled', true);
+                }
             });
 		</script>
 	{{super()}}

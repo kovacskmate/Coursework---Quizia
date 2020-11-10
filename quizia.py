@@ -54,22 +54,22 @@ def createDailyChallenge():
         db.commit()
         return str(questionIDs)
 
+#should only be checked at midnight in a real environment
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=checkForAchievements, trigger="interval", seconds=10)
 scheduler.add_job(func=createDailyChallenge, trigger="interval", seconds=10)
 scheduler.start()
-
 atexit.register(lambda: scheduler.shutdown())
-
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db' # sqlalcehmy needs to know where the database is located as well
+app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 
-#todo: generate secret key
 #todo: better templating
 #todo: improve editProfile validation
 #todo: make queries secure
+#todo: create 404 page
+#todo: improve css and html
 
 UPLOAD_FOLDER = 'Quizia\static\questionImages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -83,7 +83,7 @@ db = SQLAlchemy(app)
 db_location = 'Quizia\database\quizia.db'
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login' # this is where @login_required redirects to if there is no user logged in
+login_manager.login_view = 'login'
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -152,7 +152,7 @@ def listcategories():
         page.append(str(item))
     # for row in db.cursor().execute(sql):
     #     page.append(str(row)) 
-    return ''.join(page)
+    return ''.join('b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"')
 
 @app.route('/play/<quiz_id>')
 @login_required
@@ -209,20 +209,22 @@ def paging(page, sql, template):
     cur = db.cursor()  
     sql = sql
     startLimit = int(page) * 20 - 20
-    result = cur.execute(sql.format(startLimit,20))    
-    rowcount = result.fetchone()
+    result = cur.execute(sql.format(startLimit,21))    
+    rowcount = result.fetchall()
+    disableNext = 1
     data = []
-    if rowcount is None and int(page) == 1:
-        return render_template(template, name=current_user.username, data=data, page=page)
-    elif rowcount is None and int(page) != 0:
+    if len(rowcount) == 0 and int(page) == 1:
+        return render_template(template, name=current_user.username, data=data, page=page, disableNext=disableNext)
+    elif len(rowcount) == 0 and int(page) != 0:
         return "404"
     elif int(page) < 1:
         return "404"
     else:
         for item in cur.execute(sql.format(startLimit, 20)):
             data.append(item)
-        return render_template(template, name=current_user.username, data=data, page=page)
-
+        if len(rowcount) > 20:
+            disableNext = 0
+        return render_template(template, name=current_user.username, data=data, page=page, disableNext=disableNext)
 
 @app.route('/popular/<page>')
 @login_required
@@ -442,7 +444,6 @@ def editProfile():
     userdata = db.cursor().execute(sql.format(current_user.id)).fetchall()
     return render_template('editProfile.html', name=current_user.username, userdata=userdata)
 
-#todo: uploaded image names should be unique
 @app.route('/_saveUserdataToDB', methods=['GET', 'POST'])
 @login_required
 def _saveUserdataToDB(): 

@@ -19,7 +19,7 @@ CREATE TABLE user (
     challenge_score INTEGER
 );
 
-INSERT INTO user (id, username, email, password, played_quizzes, profile_pic, introduction, reg_date, challenge_score) VALUES (1, 'testUser', 'testUser@testUser.com', 'sha256$sb3uDJ6d$b98dad1753403a32c14d550da0044c9150724bfb448319d1314516dcdd11763a', 123, '/static/profilePictures/4e3fbec19ea352ce7b54d263cb4d60ca.png', 'Hey it me ya boi', '2020-10-03', 32);
+INSERT INTO user (id, username, email, password, played_quizzes, profile_pic, introduction, reg_date, challenge_score) VALUES (1, 'testUser', 'testUser@testUser.com', 'sha256$Nj90WrYv$7f4e8974ab3529be3ff46eee4fd822848e29afb334b92eaae68f9f7b7d188482', 123, '/static/profilePictures/4e3fbec19ea352ce7b54d263cb4d60ca.png', 'Hey it me ya boi', '2020-10-03', 32);
 
 CREATE TABLE achievements (
     achievement_id   INTEGER   PRIMARY KEY,
