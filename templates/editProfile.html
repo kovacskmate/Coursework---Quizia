@@ -31,23 +31,27 @@ Quizia
                     contentType: false,
                     success: function (responseData)
                     {
-                        if(responseData == "1"){
-                            $("#results").append("Saved");
+                        //if(responseData == "1"){
+                            $("#results").text(responseData);
                             $("#intro").text($("#introduction").val())
                             var reader = new FileReader();
                             if (document.getElementById("image").files[0] != null){
+                                console.log("image is not null")
                                 reader.readAsDataURL(document.getElementById("image").files[0]);
                                 reader.onload = function (event){
                                     document.getElementById("profPic").src = event.target.result;
                                 };  
-                            }                                                                                     
-                        } else{
-                            $("#results").append(responseData);
-                        }                     
+                            }
+                            else{
+                                console.log("image is null")
+                            }                                                  
+                        // } else{
+                        //     $("#results").text(responseData);
+                        // }                     
                     },
                     error: function (responseData)
                     {						
-                        $("#results").append(responseData);
+                        $("#results").text(responseData);
                     }
                 });  
             }			
@@ -77,12 +81,14 @@ Quizia
                     <div class="introduction">
                         <label for="">Introduction:</label>
                         <input type="text" id="introduction" name="introduction">                        
-                    </div>                    
-                    <button type="button" id="saveUserdata">Save</button>
+                    </div>
+                    <div style="text-align: right;">
+                        <button type="button" id="saveUserdata" style="margin-right: 15px;">Save</button>
+                    </div>
                 </form>
-            </div>
-            <div id="results">
+                <div id="results" class="results">
 
+                </div>
             </div>
         </div>
     </main>   

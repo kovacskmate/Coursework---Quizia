@@ -67,9 +67,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 
 #todo: better templating
 #todo: improve editProfile validation
-#todo: make queries secure
 #todo: create 404 page
 #todo: improve css and html
+#todo: separate code to different files
 
 UPLOAD_FOLDER = 'Quizia\static\questionImages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -307,25 +307,25 @@ def _saveQuizToDB():
         categoryIDs = cursor.execute(sql).fetchall()
         #quizname cannot be empty        
         if not f['quizName']:
-            raise Exception("quiz name was empty")
+            raise Exception("Quiz name was empty")
         #selectcategory cannot be empty, has to be in category table id
         categoryExists = False
         if not f['selectCategory']:
-            raise Exception("no category selected")
+            raise Exception("No category selected")
         for item in categoryIDs:
             if int(f['selectCategory']) == item[0]:
                 categoryExists = True
                 break
         if not categoryExists:
-            raise Exception("category does not exist")
+            raise Exception("Category does not exist")
         
         #number of questions cannot be empty, has to be a number, and be bigger than 1
         if not f['numberOfQuestions']:
-            raise Exception("number of questions was empty")
+            raise Exception("Number of questions was zero")
         elif not f['numberOfQuestions'].isdigit():
-            raise Exception("number of questions was not a number")
+            raise Exception("Number of questions was not a number")
         elif int(f['numberOfQuestions']) < 1:
-            raise Exception("there were no questions")
+            raise Exception("There were no questions")
 
         sql = "INSERT INTO quizzes (category_id, user_id, quiz_name, plays) VALUES ({}, '{}', '{}', 0)"
         cursor.execute(sql.format(f['selectCategory'], current_user.id, f['quizName']))        
@@ -336,12 +336,12 @@ def _saveQuizToDB():
             questionQ = []
             questionQ.append(quiz_id)
             if not f['questionQ' + str(i + 1)]:
-                raise Exception("question was empty")
+                raise Exception("Question was empty")
             else:
                 questionQ.append(f['questionQ' + str(i + 1)])
 
             if not f['answer1' + str(i + 1)] or not f['answer2' + str(i + 1)] or not f['answer3' + str(i + 1)] or not f['answer4' + str(i + 1)]:
-                raise Exception("answer was empty")
+                raise Exception("Answer was empty")
             else:
                 questionQ.append(f['answer1' + str(i + 1)])
                 questionQ.append(f['answer2' + str(i + 1)])
@@ -357,22 +357,23 @@ def _saveQuizToDB():
                     image = Image.open(request.files['image' + str(i + 1)])                   
                     size = (640, 360)
                     image = image.resize(size)
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], uuid.uuid4().hex + filename))
-                    questionQ.append('/static/questionImages/' + uuid.uuid4().hex + filename)
+                    uniqueFilename = uuid.uuid4().hex + filename
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], uniqueFilename))
+                    questionQ.append('/static/questionImages/' + uniqueFilename)
                 else:
-                    raise Exception("wrong file format")
+                    raise Exception("Wrong file format")
 
             if f['correctAnswer' + str(i + 1)] == "answer1" or f['correctAnswer' + str(i + 1)] == "answer2" or f['correctAnswer' + str(i + 1)] == "answer3" or f['correctAnswer' + str(i + 1)] == "answer4":
                 questionQ.append(f['correctAnswer' + str(i + 1)])                 
             else:                
-                raise Exception("unexpected correct answer")
+                raise Exception("No correct answer selected")
 
             if not f['timeLimit' + str(i + 1)]:
-                raise Exception("time limit was empty")
+                raise Exception("Time limit was empty")
             elif not f['timeLimit' + str(i + 1)].isdigit():
-                raise Exception("time limit was not a number")
+                raise Exception("Time limit was not a number")
             elif int(f['timeLimit' + str(i + 1)]) < 1 or int(f['timeLimit' + str(i + 1)]) > 999:
-                raise Exception("time limit was not in accepted range")
+                raise Exception("Time limit was not in accepted range")
             else:
                 questionQ.append(f['timeLimit' + str(i + 1)])
 
@@ -381,7 +382,7 @@ def _saveQuizToDB():
             questionsToSave.append(questionQ)      
         cursor.executemany("INSERT INTO questions (quiz_id, question, answer1, answer2, answer3, answer4, image, correctAnswer, time_limit, attempts, correct_attempts) VALUES(?,?,?,?,?,?,?,?,?,?,?);", questionsToSave)
         db.commit()
-        return jsonify(f['numberOfQuestions'])
+        return jsonify("Quiz successfully saved")
     except Exception as inst:        
         return jsonify(str(inst))
 
@@ -453,20 +454,21 @@ def _saveUserdataToDB():
         cursor = db.cursor()
         file = request.files['image']
         if not f['introduction'] and not file.filename:
-            raise Exception("nothing to be saved")
+            raise Exception("Nothing to be saved")
         if not f['introduction'] and file.filename:
             filename = secure_filename(file.filename)
             if allowed_file(filename):
                 image = Image.open(request.files['image'])                   
                 size = (400, 400)
                 image = image.resize(size)
-                image.save(os.path.join(app.config['UPLOAD_FOLDER2'], uuid.uuid4().hex + filename))
-                filePath = '/static/profilePictures/' + uuid.uuid4().hex + filename
+                uniqueFilename = uuid.uuid4().hex + filename
+                image.save(os.path.join(app.config['UPLOAD_FOLDER2'], uniqueFilename))
+                filePath = '/static/profilePictures/' + uniqueFilename
                 sql = "UPDATE user SET profile_pic = '{}' WHERE id = {}"
                 cursor.execute(sql.format(filePath, current_user.id))    
                 db.commit()
             else:
-                raise Exception("wrong file format")
+                raise Exception("Wrong file format")
         elif f['introduction'] and not file.filename:
             introduction = f['introduction']
             sql = "UPDATE user SET introduction = '{}' WHERE id = {}"
@@ -479,14 +481,15 @@ def _saveUserdataToDB():
                 image = Image.open(request.files['image'])                   
                 size = (400, 400)
                 image = image.resize(size)
-                image.save(os.path.join(app.config['UPLOAD_FOLDER2'], uuid.uuid4().hex + filename))
-                filePath = '/static/profilePictures/' + uuid.uuid4().hex + filename
+                uniqueFilename = uuid.uuid4().hex + filename
+                image.save(os.path.join(app.config['UPLOAD_FOLDER2'], uniqueFilename))
+                filePath = '/static/profilePictures/' + uniqueFilename
                 sql = "UPDATE user SET profile_pic = '{}', introduction = '{}' WHERE id = {}"
                 cursor.execute(sql.format(filePath, introduction, current_user.id))    
                 db.commit()
             else:
-                raise Exception("wrong file format")
-        return jsonify("1")
+                raise Exception("Wrong file format")
+        return jsonify("Profile successfully saved")
     except Exception as inst:        
         return jsonify(str(inst))
 
@@ -581,4 +584,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.101', port=3232, debug=True)
+    app.run(host='192.168.1.72', port=3232, debug=True)

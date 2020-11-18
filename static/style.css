@@ -31,6 +31,10 @@ body{
   float:left
 }
 
+.floatRight{
+  float:right;
+}
+
 .footer{
   position: absolute;
   width: 100%;
@@ -552,3 +556,10 @@ hr.divider {
   margin-left: 10px;
 }
 
+.results{
+  padding-top: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: medium;
+  margin: auto;
+}
