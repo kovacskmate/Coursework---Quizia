@@ -31,7 +31,6 @@ Quizia
                     contentType: false,
                     success: function (responseData)
                     {
-                        //if(responseData == "1"){
                             $("#results").text(responseData);
                             $("#intro").text($("#introduction").val())
                             var reader = new FileReader();
@@ -44,10 +43,7 @@ Quizia
                             }
                             else{
                                 console.log("image is null")
-                            }                                                  
-                        // } else{
-                        //     $("#results").text(responseData);
-                        // }                     
+                            }                    
                     },
                     error: function (responseData)
                     {						

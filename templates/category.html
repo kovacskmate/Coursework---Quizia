@@ -22,7 +22,6 @@ Quizia
                 window.location.href='/categories/'+ category +'/' + (page-1);
             });
 
-            //q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays
 			$(document).ready(function() { 
                 if(quizzes.length <= 0){
                     $("#popularQuizUL").append('<p>No quizzes</p>');
@@ -31,6 +30,12 @@ Quizia
                         $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + quizzes[i][3] + '</p><p>' + quizzes[i][1] + '</p><p>' + quizzes[i][4] + '</p><p>' + quizzes[i][2] + '</p><p><a href=/play/' + quizzes[i][0] + '>Play</a></p></li>');
                     }
                 }  
+                if (page == 1){
+                    $("#prevPage").prop('disabled', true);
+                }
+                if(disableNext == 1){
+                    $("#nextPage").prop('disabled', true);
+                }
             });
 		</script>
 	{{super()}}
@@ -46,33 +51,27 @@ Quizia
         {% include "headerTemplate.html" ignore missing %}
         {% include "navbar.html" ignore missing %}
         <div class="content" id="content">           
-            <h3 class="homeTitle">{{category}} quizzes</h3>
-            <div id="topPopularQuizzes">                
-                <div id="popularQuiz" class="popularQuiz">
-                    <ul id="popularQuizUL">
-                        <li class="flex-toplist makeBold">
-                            <p>Rank</p>
-                            <p>Name</p>
-                            <p>Category</p>
-                            <p>Plays</p>
-                            <p>Made by</p>
-                            <p>Play quiz</p>
-                        </li>
-                    </ul>                    
-                    <button type="button" id="prevPage">Previous page</button>
-                    <button type="button" id="nextPage">Next page</button>
-                </div>                
-            </div>           
-            <!-- quiz_id, c.category_name, u.username, quiz_name, plays -->
-            <!-- {% for quiz in quizzes %}
-                Quiz name: {{ quiz[3] }}
-                Quiz category: {{ quiz[1] }}
-                Quiz made by: {{ quiz[2] }}
-                {{ quiz[4] }} Plays
-                <a href="/play/{{ quiz[0] }}">Play this quiz</a>
-                <br>
-            {% endfor %} -->
-
+            <h3 class="centeredHeader">{{category}} quizzes</h3>                
+            <div id="popularQuiz" class="listHolderBox">
+                <ul id="popularQuizUL">
+                    <li class="flex-toplist makeBold">
+                        <p>Rank</p>
+                        <p>Name</p>
+                        <p>Category</p>
+                        <p>Plays</p>
+                        <p>Made by</p>
+                        <p>Play quiz</p>
+                    </li>
+                </ul>
+                <div id="pagingButtonsMain" class="pagingButtonsMain">
+                    <div id="buttonLeft" class="pagingButtonsDiv">
+                        <button type="button" id="prevPage" class="pagingButtons floatRight" style="margin:auto;"><</button>
+                    </div>
+                    <div id="buttonRight" class="pagingButtonsDiv">
+                        <button type="button" id="nextPage" class="pagingButtons floatLeft" style="margin:auto;">></button>        
+                    </div>                   
+                </div> 
+            </div>
         </div>
     </main>   
     <footer class="footer" id="footer">

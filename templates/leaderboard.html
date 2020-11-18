@@ -23,7 +23,6 @@ Quizia
                 window.location.href='/leaderboard/' + (page-1);
             });
 
-            //id, username, score, numberofachievements, played_quizzes, challenge score
 			$(document).ready(function() { 
                 if(players.length <= 0){
                     $("#playersUL").append('<p>No players</p>');
@@ -72,10 +71,6 @@ Quizia
                     <button type="button" id="nextPage">Next page</button>
                 </div>
             </div> 
-            <!-- {% for user in users %}
-            username: {{ user[0] }}<br>
-            score: {{ user[1] }}<br>            
-        {% endfor %} -->
         </div>
     </main>   
     <footer class="footer" id="footer">

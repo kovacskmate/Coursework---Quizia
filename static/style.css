@@ -1,18 +1,75 @@
+/* colours: */
+.colours{
+  color: #61892F;
+  color: #86C232;
+  color: #222629;
+  color: #474B4F;
+  color: #6B6E70;
+}
+
 html, body{
   min-height: 100%;
   height: 100%;
   width: 100%;
 }
 body{
-  color: #fff;
+  background-color: #222629;
   margin: 0;
   padding: 0; 
   font-family: 'Open Sans', sans-serif;
+  color: #86C232;
 }
 
+.floatRight{
+  float: right;
+}
+
+.floatLeft{
+  float: left;
+}
+
+/* login page */
+.login{
+  overflow: hidden;
+  color:White;
+  /* background-color: black; */
+  padding: 20px 30px 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 6px 4px BLACK;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  transform: translate(-50%, -50%)
+}
+
+.loginButton {
+  background-color: #86C232;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  width: fit-content;
+  border: 0;
+  padding: 5px;
+  margin-top: 10px;
+  margin-left: -5px;
+  border-radius: 5px;
+}
+
+.loginHeader{
+  padding-top: 0px;
+  margin-top: 0px;
+  color: #86C232;
+}
+/* login page */
+
+
+/* header footer */
 .header {
   top: 0;
-  background-color: #333;
+  /* background-color: #474B4F; */
   padding-top: 8px;
   padding-bottom: 8px;
   font-size: 17pt;
@@ -27,18 +84,10 @@ body{
   float: right;
 }
 
-.test{
-  float:left
-}
-
-.floatRight{
-  float:right;
-}
-
 .footer{
   position: absolute;
   width: 100%;
-  background-color: #333;
+  /* background-color: #474B4F; */
   padding-top: 8px;
   padding-bottom: 8px;
   font-size: 17pt;
@@ -49,15 +98,16 @@ body{
   position: absolute;
   width: 100%;
   bottom: 0;
-  background-color: #333;
+  /* background-color: #333; */
   padding-top: 8px;
   padding-bottom: 8px;
   font-size: 17pt;
   text-align: center;
 }
+/* header footer */
 
 .main{  
-  background-color: #444;
+  background-color: #222629;
   margin-top: 0px;
   padding-top: 0px;
   display: flex 0 0 auto;
@@ -66,65 +116,26 @@ body{
 .content{
   min-height: 1000px;
   margin-left: 230px;
-  background-color: #ffffff;
-  color: black;
+  /* background-color: #ffffff; */
+  color: white;
 }
 
-.testButton{
-  width: 50px;
+.centeredHeader{
+  color: #86C232;
+  text-align: center;
+  font-size: 30px;
+  margin: 0px;
+  padding: 20px;
 }
 
-.login{
-  overflow: hidden;
-  background-color: black;
-  padding: 40px 30px 30px 30px;
-  /* border-radius: 10px; */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 400px;
-  transform: translate(-50%, -50%)
+a{
+  color: #86C232;
 }
 
-input{
-  display: block;
-  /* border-radius: 5px; */
-  font-size: 16px;
-  background: white;
-  width: 100%;
-  border: 0;
-  padding: 10px 10px;
-  margin: 15px -10px;
+a:hover{
+  color: #61892F;
 }
 
-.loginButton {
-  color: black;
-  cursor: pointer;
-  font-size: 16px;
-  text-transform: uppercase;
-  width: fit-content;
-  border: 0;
-  padding: 10px 10px;
-  margin-top: 10px;
-  margin-left: -5px;
-  float: left;
-  /* border-radius: 5px;   */
-}
-.registerButton {
-  color: black;
-  cursor: pointer;
-  font-size: 16px;
-  text-transform: uppercase;
-  width: fit-content;
-  border: 0;
-  padding: 10px 10px;
-  margin-top: 10px;
-  margin-left: -5px;
-  float: right;
-  /* border-radius: 5px;   */
-}
-
-/* testing  */
 .nav{
   width: 230px;
   float: left;
@@ -147,7 +158,6 @@ input{
 .nav ul a li{
   color: white;
   font-size: 16px;
-  /* text-transform: uppercase; */
   font-weight: bold;
   text-decoration: none;  
 }
@@ -166,22 +176,11 @@ hr.divider {
   border: 2px solid white;
 }
 
-
-
-/* top players on home page */
-
 .topPlayers{
   border-radius: 5px;
   margin: auto;
   width: 80%;
   box-shadow: 0 0 6px 4px grey;
-}
-
-.homeTitle{
-  text-align: center;
-  font-size: 30px;
-  margin: 0px;
-  padding: 20px;
 }
 
 .first{
@@ -202,10 +201,6 @@ hr.divider {
 
 .flex-container div {
   flex: 1;
-}
-
-.topPlayerInfo{
-
 }
 
 .topPlayerInfo p{
@@ -233,26 +228,23 @@ hr.divider {
   margin-left: 20px;
 }
 
-/* top players on home page */
-
-/* popular quizzes home page */
-
-.popularQuiz{
+.listHolderBox{
   margin: auto;
   width: 80%;
   font-size: 18px;
   border-radius: 5px;
-  box-shadow: 0 0 6px 4px grey;
+  box-shadow: 0 0 6px 4px black;
   margin-bottom: 30px;
+  padding-bottom: 10px;
 }
 
-.popularQuiz ul{
+.listHolderBox ul{
   margin: 0px;
   padding: 0px;
   list-style-type: none;
 }
 
-.popularQuiz ul li{
+.listHolderBox ul li{
   margin: 0px;
   padding: 5px;
 }
@@ -272,24 +264,54 @@ hr.divider {
   text-align: center;
 }
 
-/* popular quizzes home page */
+.pagingButtonsMain{
+  margin: auto;
+  width: 100%;
+  display: flex;
+}
+
+.pagingButtonsDiv{
+  width: 49%;
+  margin: auto;
+  display: inline;
+
+}
+
+.pagingButtons{
+  background-color: #86C232;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 20px;
+  text-transform: uppercase;
+  border: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 10px;
+  margin-left: -5px;
+  
+  border-radius: 5px;
+}
 
 /* categoires */
 
 .categories{
   border-radius: 5px;
-  box-shadow: 0 0 6px 4px grey;
+  box-shadow: 0 0 6px 4px black;
   margin: auto;
   width: 80%;
   display: flex;
   flex-wrap: wrap;
 }
+
 .categories a{
   padding: auto;
   flex-grow: 1;
   width: 30%;
   padding-top: 20px;
   margin: 5px;
+  font-weight: bold;
+  font-size: 16px;
   padding-bottom: 20px;
   text-align: center;
   align-items: center;

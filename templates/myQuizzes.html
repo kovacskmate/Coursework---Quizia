@@ -23,7 +23,6 @@ Quizia
                 window.location.href='/myQuizzes/' + (page-1);
             });
 
-            //q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays
 			$(document).ready(function() { 
                 if(myQuizzes.length <= 0){
                     $("#myQuizzesUL").append('<p>No quizzes</p>');
@@ -64,6 +63,7 @@ Quizia
                             <p>Name</p>
                             <p>Category</p>
                             <p>Plays</p>
+                            <p>Made by</p>
                             <p>Play quiz</p>
                         </li>
                     </ul>
@@ -71,14 +71,6 @@ Quizia
                     <button type="button" id="nextPage">Next page</button>
                 </div>                
             </div> 
-            <!-- {% for quiz in myquizzes %}
-                Quiz name: {{ quiz[3] }}
-                Quiz category: {{ quiz[1] }}
-                Quiz made by: {{ quiz[2] }}
-                {{ quiz[4] }} Plays
-                <a href="/play/{{ quiz[0] }}">Play this quiz</a>
-                <br>
-            {% endfor %} -->
         </div>
     </main>   
     <footer class="footer" id="footer">

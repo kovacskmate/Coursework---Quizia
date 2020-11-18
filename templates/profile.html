@@ -5,13 +5,10 @@
 Quizia
 {% endblock %}
 
-<head>
-    <!-- Custom Javascript loaded before Bootstrap’s javascript code: -->
-        <!-- https://embed.plnkr.co/plunk/oyaVFn -->
+<head>    
     {% block scripts %}
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type=text/javascript>
-            //u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, COUNT(q.quiz_id) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score
+        <script type=text/javascript>            
             var userdata = {{userdata|tojson}};
             var achievements = {{userachievements|tojson}};
             var remove = {{remove}};
@@ -33,8 +30,6 @@ Quizia
                 $("#totalScore").text(userdata[0][7]);
                 $("#createdQuizzes").text(userdata[0][5]);
                 $("#memberSince").text(userdata[0][4]);
-
-                //a.achievement_name, a.description, a.icon
                 if(achievements.length <= 0){
                     $("#earnedAchievements").append('<p>No achievements</p>');
                 } else{

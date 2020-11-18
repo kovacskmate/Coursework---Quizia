@@ -77,35 +77,13 @@ Quizia
 
             //https://stackoverflow.com/questions/31109581/javascript-timer-progress-bar
             function createProgressbar(id, duration, callback) {
-                // We select the div that we want to turn into a progressbar
-                //var progressbar = document.getElementById(id);
-                //progressbar.className = 'progressbar';
                 console.log(duration);
                 $("#" + id).attr('class', 'progressbar');
-            
-                // We create the div that changes width to show progress
                 var $div = $("<div>", {id: "innerprogress", "class": "inner"});
-                //var progressbarinner = document.createElement('div');
-                //progressbarinner.className = 'inner';
-            
-                // Now we set the animation parameters
-                //$($div).attr("style", "animation-duration: 5;")
-                //progressbarinner.style.animationDuration = duration;
-            
-                // Eventually couple a callback
-                //if (typeof(callback) === 'function') {
-                //    progressbarinner.addEventListener('animationend', callback);
-                //}
                 $($div).on('animationend', callback);
-
-                // Append the progressbar to the main progressbardiv
-                //progressbar.appendChild(progressbarinner);
                 $($div).attr("style", "animation-play-state: running; animation-duration: "+duration+"s;")
-
                 $("#" +id).append($div);
-            
-                // When everything is set up we start the animation
-                //progressbarinner.style.animationPlayState = 'running';                
+                         
             }
 		</script>
 	{{super()}}
@@ -118,8 +96,7 @@ Quizia
 {% endblock %}
 
 {% block content %}
-    <main class="main" id="main">
-        <!-- qu.quiz_name, qs.question_id, qs.quiz_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts -->
+    <main class="main" id="main">        
         {% include "headerTemplate.html" ignore missing %}
         {% include "navbar.html" ignore missing %}
         <div class="content" id="content">
