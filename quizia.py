@@ -71,6 +71,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 #todo: improve css and html
 #todo: separate code to different files
 #todo: paging is buggy on category pages
+#todo: profile default informations and styling
 
 UPLOAD_FOLDER = 'Quizia\static\questionImages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -351,7 +352,7 @@ def _saveQuizToDB():
 
             file = request.files['image' + str(i + 1)]
             if not file.filename:
-                questionQ.append('noImage')
+                questionQ.append('/static/questionImages/noImage.PNG')
             else:
                 filename = secure_filename(file.filename)
                 if allowed_file(filename):

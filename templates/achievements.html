@@ -16,7 +16,7 @@ Quizia
                     $("#earnedAchievements").append('<p>No achievements</p>');
                 } else{
                     for(i = 0; i < achievements.length; i++){
-                        $("#earnedAchievements").append('<div><img class="profPic" id="profPic" name="profPic "src="' + achievements[i][5] + '" alt="itBroke" width="200" height="200"><p>' + achievements[i][2] + '</p><p>' + achievements[i][1] + '</p></div>');
+                        $("#earnedAchievements").append('<div><img class="achievementIcon" id="achievementIcon" name="achievementIcon "src="' + achievements[i][5] + '" alt="itBroke" width="200px" height="200px"><p class="achievementDesc1">' + achievements[i][2] + '</p><p class="achievementDesc2">' + achievements[i][1] + '</p></div>');
                     }
                 }  
             });
@@ -36,7 +36,7 @@ Quizia
         {% include "navbar.html" ignore missing %}
         <div class="content" id="content">
             
-            <h3 class="homeTitle">Earned achievements</h3> 
+            <h3 class="centeredHeader">Earned achievements</h3> 
                 <div id="earnedAchievements" class="earnedAchievements">
                 </div>
         </div>

@@ -23,10 +23,8 @@ Quizia
             });
             
             function NextQuestion(){
-                console.log(quiz[questionNumber].time_limit);
-                $("#quizQuestion").html('<div class="questionTop"><p class="headerLeft">Question '+(questionNumber+1)+'</p><p class="headerRight" id="score">Score: '+(correctNumber)+' out of '+(questionNumber+1)+'</p> </div><img src="" alt="asd" width="640" height="360" class="questionImage" id="image" name="image"> <p id="question" name="question" style="text-align: center;">Question</p> <div id="answers" class="answersBox"> <button class="checkbutton" type="button" id="answer1" name="answer1">Answer1</button> <button class="checkbutton" type="button" id="answer2" name="answer2">Answer2</button> <button class="checkbutton" type="button" id="answer3" name="answer3">Answer3</button> <button class="checkbutton" type="button" id="answer4" name="answer4">Answer4</button></div> <div class="remainingTime"> <p>Remaining time</p><div id="progressbar1" class="progressbar"></div> </div><div class="questionTop"><p id="results" style="text-align:center; margin:20px; padding:20px; font-weight:bold; height:70px;"></p></div><div class="questionTop"><p id="madeBy" name="madeBy" class="headerRight">Made by: testUser</p> <p id="correct_attempts" name="correct_attempts" class="headerRight">Correct attempts: 23</p> <p id="attempts" name="attempts" class="headerRight">Attempts: 43</p> </div> </div>');
+                $("#quizQuestion").html('<div class="questionTop"><p class="headerLeft">Question '+(questionNumber+1)+'</p><p class="headerRight" id="score">Score: '+(correctNumber)+' out of '+(questionNumber+1)+'</p> </div><img src="" width="640" height="360" class="questionImage" id="image" name="image" alt="Image failed to load"> <p id="question" name="question" class="gameQuestion">Question</p> <div id="answers" class="answersBox"> <button class="checkbutton" type="button" id="answer1" name="answer1">Answer1</button> <button class="checkbutton" type="button" id="answer2" name="answer2">Answer2</button> <button class="checkbutton" type="button" id="answer3" name="answer3">Answer3</button> <button class="checkbutton" type="button" id="answer4" name="answer4">Answer4</button></div> <div class="remainingTime"> <p>Remaining time</p><div id="progressbar1" class="progressbar"></div> </div><div class="questionResponse" id="results"></div><div class="questionTop"><p id="madeBy" name="madeBy" class="headerRight">Made by: testUser</p> <p id="correct_attempts" name="correct_attempts" class="headerRight">Correct attempts: 23</p> <p id="attempts" name="attempts" class="headerRight">Attempts: 43</p> </div> </div>');
                 createProgressbar('progressbar1', quiz[questionNumber].time_limit, function() {
-                    console.log('20s progressbar is finished!');
                     CheckAnswer("incorrect");
                 });
                 $("#madeBy").text("Made by: " + quiz[0].username);      
@@ -45,6 +43,11 @@ Quizia
             })
 
             function CheckAnswer(buttonId){
+                $("#answer1").prop('disabled', true);
+                $("#answer2").prop('disabled', true);
+                $("#answer3").prop('disabled', true);
+                $("#answer4").prop('disabled', true);
+
                 var questionUpdate = new Object();
                 $("#innerprogress").attr("style", "animation-play-state: paused; animation-duration: "+quiz[questionNumber].time_limit+"s;")
                 questionUpdate.question_id = quiz[questionNumber].question_id;
@@ -100,7 +103,7 @@ Quizia
         {% include "headerTemplate.html" ignore missing %}
         {% include "navbar.html" ignore missing %}
         <div class="content" id="content">
-            <h3 class="homeTitle" id="quiz_name" name="quiz_name">Quiz name</h3>
+            <h3 class="centeredHeader" id="quiz_name" name="quiz_name">Quiz name</h3>
             <div class="quizQuestion" id="quizQuestion">
                 
             </div>               

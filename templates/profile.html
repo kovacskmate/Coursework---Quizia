@@ -34,7 +34,7 @@ Quizia
                     $("#earnedAchievements").append('<p>No achievements</p>');
                 } else{
                     for(i = 0; i < achievements.length; i++){
-                        $("#earnedAchievements").append('<div><img class="profPic" id="profPic" name="profPic "src="' + achievements[i][2] + '" alt="itBroke" width="200" height="200"><p>' + achievements[i][1] + '</p><p>' + achievements[i][0] + '</p></div>');
+                        $("#earnedAchievements").append('<div><img class="achievementIcon" id="achievement" name="achievement" src="' + achievements[i][2] + '" alt="itBroke" width="200" height="200"><p class="achievementDesc1">' + achievements[i][1] + '</p><p class="achievementDesc2">' + achievements[i][0] + '</p></div>');
                     }
                 }  
             });
@@ -53,40 +53,40 @@ Quizia
         {% include "headerTemplate.html" ignore missing %}
         {% include "navbar.html" ignore missing %}
         <div class="content" id="content">
-            <h3 class="homeTitle" id="username">testUser's profile</h3> 
+            <h3 class="centeredHeader" id="username">testUser's profile</h3> 
             <div id="userprofile" class="userprofile">
                 <img class="profPic" id="profPic" name="profPic "src="" alt="itBroke" width="200" height="200">
                 <div id="userdata" class="userdata">                    
                     <div>
                         <h3>Introduction</h3>
-                        <p id="introduction">this is a lot of text here this is a lot of text here this is a lot of text here this is a lot of text here</p>
+                        <p id="introduction"></p>
                     </div>
                     <div>
                         <h3>Played quizzes</h3>
-                        <p id="playedQuizzes">123</p>
+                        <p id="playedQuizzes"></p>
                     </div>
                     <div>
                         <h3>Challenge score</h3>
-                        <p id="challengeScore">123</p>
+                        <p id="challengeScore"></p>
                     </div>
                     <div>
                         <h3>Total score</h3>
-                        <p id="totalScore">123</p>
+                        <p id="totalScore"></p>
                     </div>
                     <div>
                         <h3>Created quizzes</h3>
-                        <p id="createdQuizzes">123</p>
+                        <p id="createdQuizzes"></p>
                     </div>
                     <div>
                         <h3>Member since</h3>
-                        <p id="memberSince">123</p>
+                        <p id="memberSince"></p>
                     </div>
                 </div>
-                <h3 class="homeTitle">Earned achievements</h3> 
+                <h3 class="centeredHeader">Earned achievements</h3> 
                 <div id="earnedAchievements" class="earnedAchievements">
                 </div>
                 <div class="results">
-                    <button type="button" id="editProfile">Edit profile</button>
+                    <button type="button" id="editProfile" class="greenButton">Edit profile</button>
                 </div>
             </div>
         </div>

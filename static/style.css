@@ -43,21 +43,6 @@ body{
   transform: translate(-50%, -50%)
 }
 
-.loginButton {
-  background-color: #86C232;
-  color: white;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  text-transform: uppercase;
-  width: fit-content;
-  border: 0;
-  padding: 5px;
-  margin-top: 10px;
-  margin-left: -5px;
-  border-radius: 5px;
-}
-
 .loginHeader{
   padding-top: 0px;
   margin-top: 0px;
@@ -77,10 +62,12 @@ body{
 }
 .headerLeft{
   padding-left: 10px;
+  margin: 0px;
   float:left;
 }
 .headerRight{
   padding-right: 10px;
+  margin: 0px;
   float: right;
 }
 
@@ -118,6 +105,39 @@ body{
   margin-left: 230px;
   /* background-color: #ffffff; */
   color: white;
+}
+
+.greenButton {
+  background-color: #86C232;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  width: fit-content;
+  border: 0;
+  padding: 5px;
+  margin-top: 10px;
+  margin-left: -5px;
+  border-radius: 5px;
+}
+
+.greenButton:disabled {
+  background-color: #61892F;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  width: fit-content;
+  border: 0;
+  padding: 5px;
+  margin-top: 10px;
+  margin-left: -5px;
+  border-radius: 5px;
+}
+
+.rightMargin{
+  margin-right: 10px;
 }
 
 .centeredHeader{
@@ -176,6 +196,7 @@ hr.divider {
   border: 2px solid white;
 }
 
+/* home page */
 .topPlayers{
   border-radius: 5px;
   margin: auto;
@@ -227,6 +248,7 @@ hr.divider {
   text-align: left;
   margin-left: 20px;
 }
+/* home page */
 
 .listHolderBox{
   margin: auto;
@@ -274,7 +296,6 @@ hr.divider {
   width: 49%;
   margin: auto;
   display: inline;
-
 }
 
 .pagingButtons{
@@ -288,8 +309,7 @@ hr.divider {
   padding-left: 5px;
   padding-right: 5px;
   margin-top: 10px;
-  margin-left: -5px;
-  
+  margin-left: -5px;  
   border-radius: 5px;
 }
 
@@ -321,14 +341,12 @@ hr.divider {
 .categories a:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
-
 /* categoires */
 
 /* userprofile */
-
 .userprofile{
   border-radius: 5px;
-  box-shadow: 0 0 6px 4px grey;
+  box-shadow: 0 0 6px 4px black;
   margin: auto;
   width: 90%;
   padding-bottom: 10px;
@@ -354,7 +372,7 @@ hr.divider {
   display: flex;
   flex-wrap: wrap;
   border-radius: 5px;
-  box-shadow: 0 0 6px 4px grey;
+  box-shadow: 0 0 6px 4px black;
 }
 
 .userdata div{
@@ -369,7 +387,7 @@ hr.divider {
   text-align: center;
   align-items: center;
   border-radius: 5px;
-  box-shadow: 0 9px 0px 0px white, 0 -9px 0px 0px white, -4px 0 5px -4px grey;
+  box-shadow: 0 9px 0px 0px #222629, 0 -9px 0px 0px #222629, -4px 0 5px -4px #86C232;
 }
 
 .userdata div p{
@@ -378,20 +396,18 @@ hr.divider {
 }
 
 .userdata h3{
-  margin-top:10px;
-}
+  margin-top:10px;}
 
 /* userprofile */
 
 /* achievements */
-
 .earnedAchievements{
   margin: auto;
   width: 97%;
   display: flex;
   flex-wrap: wrap;
   border-radius: 5px;
-  box-shadow: 0 0 6px 4px grey;
+  box-shadow: 0 0 6px 4px black;
 }
 
 .earnedAchievements div{
@@ -401,6 +417,26 @@ hr.divider {
 
 .earnedAchievements p{
   text-align: center;
+}
+
+.achievementDesc1{
+  font-size: 16px;
+  font-weight: bold;
+  color: #86C232;
+}
+
+.achievementDesc1{
+  font-size: 14px;
+}
+
+.achievementIcon{
+  margin: auto;
+  padding-top: 15px;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+  display: block;
 }
 
 /* achievements */
@@ -413,13 +449,14 @@ hr.divider {
   display: flex;
   flex-wrap: wrap;
   border-radius: 5px;
-  box-shadow: 0 0 6px 4px grey;
+  padding-top: 10px;
+  box-shadow: 0 0 6px 4px black;
 }
 
 .question{
   width: 100%;
   border-radius: 5px;
-  box-shadow: 0 0 6px 4px grey;
+  box-shadow: 0 0 6px 4px black;
   margin-bottom: 10px;
 }
 
@@ -441,7 +478,11 @@ hr.divider {
   margin: 10px;
   height: 30px;
   border-radius: 5px;
-  box-shadow: 0 0 2px 1px grey;
+  color:black;
+}
+
+.quizCreator form select{
+  color: black;
 }
 
 .questionSection{
@@ -464,12 +505,14 @@ hr.divider {
 .quizQuestion{
   width: 96%;
   border-radius: 5px;
-  box-shadow: 0 0 6px 4px grey;  
+  box-shadow: 0 0 6px 4px black;  
   margin: auto;
 }
 
 .questionTop{
   overflow: hidden;
+  padding: 10px;
+  font-weight: bold;
 }
 
 .questionImage{
@@ -480,18 +523,57 @@ hr.divider {
   display: block;
 }
 
+.gameQuestion{
+  text-align: center;
+  color : #86C232;
+  margin: 0px;
+  font-weight: bold;
+  font-size: 24px;
+  padding: 5px 0px 5px 0px;
+}
+
 .answersBox{
   display: flex;
   flex-wrap: wrap;
   width: 70%;
   margin: auto;
+  margin-top: -10px;
 }
 
-.answersBox button{
+.checkbutton{
   flex-grow: 1;
-  width: 48%;
+  width: 33%;
   height: 40px;
   margin: 10px;
+  background-color: #86C232;
+  color: white;
+  border: 0;
+  padding: 5px;
+  margin-top: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.checkbutton:disabled{
+  flex-grow: 1;
+  width: 33%;
+  height: 40px;
+  margin: 10px;
+  background-color: #61892F;
+  color: white;
+  border: 0;
+  padding: 5px;
+  margin-top: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.questionResponse{
+  text-align:center;
+  font-weight:bold;
+  padding: 5px;
+  font-size: 22px;
+  min-height:75px;
 }
 
 /* https://stackoverflow.com/questions/31109581/javascript-timer-progress-bar */
@@ -539,6 +621,7 @@ hr.divider {
   width: 60%;
   text-align: center;
   margin: auto;
+  font-size: 20px;
 }
 
 .uploadProfilepic{
@@ -571,7 +654,7 @@ hr.divider {
   max-width: 99%;
   height: 30px;
   border-radius: 5px;
-  box-shadow: 0 0 2px 1px grey;
+  color: black;
 }
 
 .userprofile form button{

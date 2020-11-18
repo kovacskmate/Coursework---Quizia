@@ -54,9 +54,9 @@ Quizia
         {% include "headerTemplate.html" ignore missing %}
         {% include "navbar.html" ignore missing %}
         <div class="content" id="content">
-            <h3 class="homeTitle">Leaderboard</h3>
+            <h3 class="centeredHeader">Leaderboard</h3>
             <div id="topPopularQuizzes">                
-                <div id="popularQuiz" class="popularQuiz">
+                <div id="popularQuiz" class="listHolderBox">
                     <ul id="playersUL">
                         <li class="flex-toplist makeBold">
                             <p>Rank</p>
@@ -67,8 +67,14 @@ Quizia
                             <p>Total score</p>
                         </li>
                     </ul>
-                    <button type="button" id="prevPage">Previous page</button>
-                    <button type="button" id="nextPage">Next page</button>
+                    <div id="pagingButtonsMain" class="pagingButtonsMain">
+                        <div id="buttonLeft" class="pagingButtonsDiv">
+                            <button type="button" id="prevPage" class="pagingButtons floatRight" style="margin:auto;"><</button>
+                        </div>
+                        <div id="buttonRight" class="pagingButtonsDiv">
+                            <button type="button" id="nextPage" class="pagingButtons floatLeft" style="margin:auto;">></button>        
+                        </div>                   
+                    </div> 
                 </div>
             </div> 
         </div>
