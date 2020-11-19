@@ -1,13 +1,9 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}
-Quizia
-{% endblock %}
-
-<head>
-	{% block scripts %}
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+{% extends "layout.html" %}
+{% block title %}Play{% endblock %}
+{% block head %}
+  {{ super() }}
+    {% block scripts %}
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type=text/javascript> 
             var userdata = {{userdata|tojson}};
             //u.username, u.profile_pic, u.introduction 
@@ -23,7 +19,7 @@ Quizia
             
             function SaveUserdataToDB(){ 
                 $.ajax({
-                   url: "/_saveUserdataToDB",
+                url: "/_saveUserdataToDB",
                     type: "POST",
                     dataType: "JSON",
                     data: new FormData(document.getElementById("form")),
@@ -51,44 +47,28 @@ Quizia
                     }
                 });  
             }			
-		</script>
-	{{super()}}
-{% endblock %}    
-</head>
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+        </script>
+    {% endblock %}
 {% endblock %}
-
 {% block content %}
-    <main class="main" id="main">
-        {% include "headerTemplate.html" ignore missing %}
-        {% include "navbar.html" ignore missing %}
-        <div class="content" id="content">
-            <h3 class="centeredHeader" id="username"></h3> 
-            <div id="userprofile" class="userprofile">
-                <img class="profPic" id="profPic" name="profPic "src="" alt="itBroke" width="200" height="200">      
-                <form id="form" name="form" method="POST" enctype="multipart/form-data">
-                    <div class="uploadProfilepic">
-                        <label for="">Change profile picture</label>
-                        <input type="file" id="image" name="image" accept="image/x-png,image/jpg,image/jpeg">                   
-                    </div>
-                    <div class="introduction">
-                        <label for="">Introduction:</label>
-                        <input style="margin-left: 10px;" type="text" id="introduction" name="introduction">                        
-                    </div>
-                    <div style="text-align: right;">
-                        <button type="button" id="saveUserdata" style="margin-right: 15px;" class="greenButton">Save</button>
-                    </div>
-                </form>
-                <div id="results" class="results">
-
-                </div>
+    <h3 class="centeredHeader" id="username"></h3> 
+    <div id="userprofile" class="userprofile">
+        <img class="profPic" id="profPic" name="profPic "src="" alt="itBroke" width="200" height="200">      
+        <form id="form" name="form" method="POST" enctype="multipart/form-data">
+            <div class="uploadProfilepic">
+                <label for="">Change profile picture</label>
+                <input type="file" id="image" name="image" accept="image/x-png,image/jpg,image/jpeg">                   
             </div>
+            <div class="introduction">
+                <label for="">Introduction:</label>
+                <input style="margin-left: 10px;" type="text" id="introduction" name="introduction">                        
+            </div>
+            <div style="text-align: right;">
+                <button type="button" id="saveUserdata" style="margin-right: 15px;" class="greenButton">Save</button>
+            </div>
+        </form>
+        <div id="results" class="results">
+
         </div>
-    </main>   
-    <footer class="footer" id="footer">
-        footer text
-    </footer> 
+    </div>
 {% endblock %}

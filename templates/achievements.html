@@ -1,47 +1,24 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}
-Quizia
+{% extends "layout.html" %}
+{% block title %}Achievements{% endblock %}
+{% block head %}
+  {{ super() }}
+    {% block scripts %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>            
+        var achievements = {{achievements|tojson}};
+        $(document).ready(function() { 
+            if(achievements.length <= 0){
+                $("#earnedAchievements").append('<p>No achievements</p>');
+            } else{
+                for(i = 0; i < achievements.length; i++){
+                    $("#earnedAchievements").append('<div><img class="achievementIcon" id="achievementIcon" name="achievementIcon "src="' + achievements[i][5] + '" alt="itBroke" width="200px" height="200px"><p class="achievementDesc1">' + achievements[i][2] + '</p><p class="achievementDesc2">' + achievements[i][1] + '</p></div>');
+                }
+            }  
+        });
+    </script>
+    {% endblock %}
 {% endblock %}
-
-<head>
-	{% block scripts %}
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type=text/javascript>            
-            var achievements = {{achievements|tojson}};
-            //id, name, descr, methodname, condition, icon
-			$(document).ready(function() { 
-                if(achievements.length <= 0){
-                    $("#earnedAchievements").append('<p>No achievements</p>');
-                } else{
-                    for(i = 0; i < achievements.length; i++){
-                        $("#earnedAchievements").append('<div><img class="achievementIcon" id="achievementIcon" name="achievementIcon "src="' + achievements[i][5] + '" alt="itBroke" width="200px" height="200px"><p class="achievementDesc1">' + achievements[i][2] + '</p><p class="achievementDesc2">' + achievements[i][1] + '</p></div>');
-                    }
-                }  
-            });
-		</script>
-	{{super()}}
-{% endblock %}    
-</head>
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
-{% endblock %}
-
-{% block content %}
-    <main class="main" id="main">
-        {% include "headerTemplate.html" ignore missing %}
-        {% include "navbar.html" ignore missing %}
-        <div class="content" id="content">
-            
-            <h3 class="centeredHeader">All achievements</h3> 
-                <div id="earnedAchievements" class="earnedAchievements">
-                </div>
-        </div>
-    </main>   
-    <footer class="footer" id="footer">
-        footer text change test
-    </footer> 
+{% block content %}  
+    <h3 class="centeredHeader">All achievements</h3> 
+    <div id="earnedAchievements" class="earnedAchievements"></div> 
 {% endblock %}

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Quizia - {% block title %}{% endblock %}</title>
+    {% endblock %}
+  </head>
+<body>
+  {% include "headerTemplate.html" ignore missing %}
+  {% include "navbar.html" ignore missing %}
+  <div id="content" class="content">
+    {% block content %}{% endblock %}
+  </div>
+  {% include "footerTemplate.html" ignore missing %}
+</body>
+</html>

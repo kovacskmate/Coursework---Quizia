@@ -105,6 +105,10 @@ body{
   margin-left: 230px;
   /* background-color: #ffffff; */
   color: white;
+  background-color: #222629;
+  margin-top: 0px;
+  padding-top: 0px;
+  display: flex 0 0 auto;
 }
 
 .greenButton {
@@ -122,10 +126,11 @@ body{
   border-radius: 5px;
 }
 
-.greenButton:disabled {
-  background-color: #61892F;
+.greenButton:disabled{
+  background-color:#61892F;
   color: white;
   font-weight: bold;
+  cursor: default;
   font-size: 14px;
   text-transform: uppercase;
   width: fit-content;
@@ -313,6 +318,20 @@ hr.divider {
   border-radius: 5px;
 }
 
+.pagingButtons:disabled{
+  background-color: #61892F;
+  color: white;
+  font-weight: bold;
+  cursor: default;
+  font-size: 20px;
+  text-transform: uppercase;
+  border: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 10px;
+  margin-left: -5px;  
+  border-radius: 5px;
+}
 /* categoires */
 
 .categories{
@@ -335,7 +354,6 @@ hr.divider {
   padding-bottom: 20px;
   text-align: center;
   align-items: center;
-  /* border: 2px solid black; */
 }
 
 .categories a:hover {
@@ -393,10 +411,12 @@ hr.divider {
 .userdata div p{
   text-align: center;
   text-justify: inter-word;
+  margin: 0;
 }
 
 .userdata h3{
-  margin-top:10px;}
+  margin-top:10px;
+}
 
 /* userprofile */
 

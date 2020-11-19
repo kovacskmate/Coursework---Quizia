@@ -96,6 +96,20 @@ class User(UserMixin, db.Model):
     reg_date = db.Column(db.Date)
     challenge_score = db.Column(db.Integer)
 
+
+#delete:
+@app.route('/jinjaParent')
+@login_required
+def jinjaParent():   
+    return render_template('jinjaParent.html'), 404
+
+@app.route('/jinjaChild')
+@login_required
+def jinjaChild():   
+    return render_template('jinjaChild.html'), 404
+#delete
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -437,7 +451,6 @@ def _updateChallengedb():
 @app.route('/profile/<id>')
 @login_required
 def profile(id):
-    #check if user exists
     db = get_db()
     if id == 'me' or int(id) == current_user.id:
         userid = current_user.id
@@ -607,7 +620,6 @@ def logout():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    # note that we set the 404 status explicitly
     return render_template('404.html'), 404
 
 if __name__ == '__main__':

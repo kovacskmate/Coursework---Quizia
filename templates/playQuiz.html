@@ -1,115 +1,85 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}
-Quizia
-{% endblock %}
-
-<head>
+{% extends "layout.html" %}
+{% block title %}Play{% endblock %}
+{% block head %}
+  {{ super() }}
 	{% block scripts %}
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type=text/javascript>            
-            var quiz = {{questions|tojson}};
-            var questionNumber = 0;
-            var correctNumber = 0;
-
-            var updateDB = new Object();
-            updateDB.questions = new Array();
-
-			$(document).ready(function() {                
-                $("#quiz_name").text(quiz[0].quiz_name);
-                $("#madeBy").text("Made by: " + quiz[0].username);
-                NextQuestion();
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>            
+        var quiz = {{questions|tojson}};
+        var questionNumber = 0;
+        var correctNumber = 0;
+        var updateDB = new Object();
+        updateDB.questions = new Array();
+        $(document).ready(function() {                
+            $("#quiz_name").text(quiz[0].quiz_name);
+            $("#madeBy").text("Made by: " + quiz[0].username);
+            NextQuestion();
+        });            
+        function NextQuestion(){
+            $("#quizQuestion").html('<div class="questionTop"><p class="headerLeft">Question '+(questionNumber+1)+'</p><p class="headerRight" id="score">Score: '+(correctNumber)+' out of '+(questionNumber+1)+'</p> </div><img src="" width="640" height="360" class="questionImage" id="image" name="image" alt="Image failed to load"> <p id="question" name="question" class="gameQuestion">Question</p> <div id="answers" class="answersBox"> <button class="checkbutton" type="button" id="answer1" name="answer1">Answer1</button> <button class="checkbutton" type="button" id="answer2" name="answer2">Answer2</button> <button class="checkbutton" type="button" id="answer3" name="answer3">Answer3</button> <button class="checkbutton" type="button" id="answer4" name="answer4">Answer4</button></div> <div class="remainingTime"> <p>Remaining time</p><div id="progressbar1" class="progressbar"></div> </div><div class="questionResponse" id="results"></div><div class="questionTop"><p id="madeBy" name="madeBy" class="headerRight">Made by: testUser</p> <p id="correct_attempts" name="correct_attempts" class="headerRight">Correct attempts: 23</p> <p id="attempts" name="attempts" class="headerRight">Attempts: 43</p> </div> </div>');
+            createProgressbar('progressbar1', quiz[questionNumber].time_limit, function() {
+                CheckAnswer("incorrect");
             });
-            
-            function NextQuestion(){
-                $("#quizQuestion").html('<div class="questionTop"><p class="headerLeft">Question '+(questionNumber+1)+'</p><p class="headerRight" id="score">Score: '+(correctNumber)+' out of '+(questionNumber+1)+'</p> </div><img src="" width="640" height="360" class="questionImage" id="image" name="image" alt="Image failed to load"> <p id="question" name="question" class="gameQuestion">Question</p> <div id="answers" class="answersBox"> <button class="checkbutton" type="button" id="answer1" name="answer1">Answer1</button> <button class="checkbutton" type="button" id="answer2" name="answer2">Answer2</button> <button class="checkbutton" type="button" id="answer3" name="answer3">Answer3</button> <button class="checkbutton" type="button" id="answer4" name="answer4">Answer4</button></div> <div class="remainingTime"> <p>Remaining time</p><div id="progressbar1" class="progressbar"></div> </div><div class="questionResponse" id="results"></div><div class="questionTop"><p id="madeBy" name="madeBy" class="headerRight">Made by: testUser</p> <p id="correct_attempts" name="correct_attempts" class="headerRight">Correct attempts: 23</p> <p id="attempts" name="attempts" class="headerRight">Attempts: 43</p> </div> </div>');
-                createProgressbar('progressbar1', quiz[questionNumber].time_limit, function() {
-                    CheckAnswer("incorrect");
+            $("#madeBy").text("Made by: " + quiz[0].username);      
+            $("#question").text(quiz[questionNumber].question);                
+            $('#image').attr('src', quiz[questionNumber].image);                
+            $("#answer1").text(quiz[questionNumber].answer1);
+            $("#answer2").text(quiz[questionNumber].answer2);
+            $("#answer3").text(quiz[questionNumber].answer3);
+            $("#answer4").text(quiz[questionNumber].answer4);  
+            $("#attempts").text("Attempts on this question: " + quiz[questionNumber].attempts);
+            $("#correct_attempts").text("Correct attempts on this question: " + quiz[questionNumber].correct_attempts);
+        }        
+        $(document).on('click', 'button.checkbutton', function(){
+            CheckAnswer(this.id);
+        })
+        function CheckAnswer(buttonId){
+            $("#answer1").prop('disabled', true);
+            $("#answer2").prop('disabled', true);
+            $("#answer3").prop('disabled', true);
+            $("#answer4").prop('disabled', true);
+            var questionUpdate = new Object();
+            $("#innerprogress").attr("style", "animation-play-state: paused; animation-duration: "+quiz[questionNumber].time_limit+"s;")
+            questionUpdate.question_id = quiz[questionNumber].question_id;
+            questionUpdate.attempts = 1;
+            questionUpdate.correct_attempts = 0;
+            if(buttonId == quiz[questionNumber].correctAnswer){
+                questionUpdate.correct_attempts = 1;
+                $("#results").text("Correct");
+                correctNumber++;
+                $("#score").text("Score: "+(correctNumber)+" out of "+(questionNumber+1)+"")
+            } 
+            else{                    
+                $("#results").text("Incorrect");
+                $("#score").text("Score: "+(correctNumber)+" out of "+(questionNumber+1)+"")
+            }
+            updateDB.questions.push(questionUpdate);
+            questionNumber++;
+            if(questionNumber >= quiz.length){
+                $("#results").append("</br>There are no more questions");
+                updateDB.numberOfQuestions = questionNumber;
+                //no need to return json here
+                $.getJSON('/_updatedb', updateDB, function(data) {
+                    //$("#content").append(data.result);
                 });
-                $("#madeBy").text("Made by: " + quiz[0].username);      
-                $("#question").text(quiz[questionNumber].question);                
-                $('#image').attr('src', quiz[questionNumber].image);                
-                $("#answer1").text(quiz[questionNumber].answer1);
-                $("#answer2").text(quiz[questionNumber].answer2);
-                $("#answer3").text(quiz[questionNumber].answer3);
-                $("#answer4").text(quiz[questionNumber].answer4);  
-                $("#attempts").text("Attempts on this question: " + quiz[questionNumber].attempts);
-                $("#correct_attempts").text("Correct attempts on this question: " + quiz[questionNumber].correct_attempts);
-            }
-            
-            $('#content').on('click', 'button.checkbutton', function(){
-                CheckAnswer(this.id);
-            })
-
-            function CheckAnswer(buttonId){
-                $("#answer1").prop('disabled', true);
-                $("#answer2").prop('disabled', true);
-                $("#answer3").prop('disabled', true);
-                $("#answer4").prop('disabled', true);
-
-                var questionUpdate = new Object();
-                $("#innerprogress").attr("style", "animation-play-state: paused; animation-duration: "+quiz[questionNumber].time_limit+"s;")
-                questionUpdate.question_id = quiz[questionNumber].question_id;
-                questionUpdate.attempts = 1;
-                questionUpdate.correct_attempts = 0;
-                if(buttonId == quiz[questionNumber].correctAnswer){
-                    questionUpdate.correct_attempts = 1;
-                    $("#results").text("Correct");
-                    correctNumber++;
-                    $("#score").text("Score: "+(correctNumber)+" out of "+(questionNumber+1)+"")
-                } 
-                else{                    
-                    $("#results").text("Incorrect");
-                    $("#score").text("Score: "+(correctNumber)+" out of "+(questionNumber+1)+"")
-                }
-                updateDB.questions.push(questionUpdate);
-                questionNumber++;
-                if(questionNumber >= quiz.length){
-                    $("#results").append("</br>There are no more questions");
-                    updateDB.numberOfQuestions = questionNumber;
-                    //no need to return json here
-                    $.getJSON('/_updatedb', updateDB, function(data) {
-						//$("#content").append(data.result);
-					});
-                } else{
-                    $("#results").append("</br>Next question in 3 seconds.");
-                    setTimeout(NextQuestion, 3000);                    
-                } 
-            }
-
-            //https://stackoverflow.com/questions/31109581/javascript-timer-progress-bar
-            function createProgressbar(id, duration, callback) {
-                console.log(duration);
-                $("#" + id).attr('class', 'progressbar');
-                var $div = $("<div>", {id: "innerprogress", "class": "inner"});
-                $($div).on('animationend', callback);
-                $($div).attr("style", "animation-play-state: running; animation-duration: "+duration+"s;")
-                $("#" +id).append($div);
-                         
-            }
-		</script>
-	{{super()}}
-{% endblock %}    
-</head>
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+            } else{
+                $("#results").append("</br>Next question in 3 seconds.");
+                setTimeout(NextQuestion, 3000);                    
+            } 
+        }
+        //https://stackoverflow.com/questions/31109581/javascript-timer-progress-bar
+        function createProgressbar(id, duration, callback) {
+            console.log(duration);
+            $("#" + id).attr('class', 'progressbar');
+            var $div = $("<div>", {id: "innerprogress", "class": "inner"});
+            $($div).on('animationend', callback);
+            $($div).attr("style", "animation-play-state: running; animation-duration: "+duration+"s;")
+            $("#" +id).append($div);                         
+        }
+    </script>
+  {% endblock %}
 {% endblock %}
-
 {% block content %}
-    <main class="main" id="main">        
-        {% include "headerTemplate.html" ignore missing %}
-        {% include "navbar.html" ignore missing %}
-        <div class="content" id="content">
-            <h3 class="centeredHeader" id="quiz_name" name="quiz_name">Quiz name</h3>
-            <div class="quizQuestion" id="quizQuestion">
-                
-            </div>               
-        </div>
-    </main>   
-    <footer class="footer" id="footer">
-        footer text
-    </footer> 
+    <h3 class="centeredHeader" id="quiz_name" name="quiz_name">Quiz name</h3>
+    <div class="quizQuestion" id="quizQuestion"></div>               
 {% endblock %}

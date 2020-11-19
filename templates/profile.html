@@ -1,23 +1,16 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}
-Quizia
-{% endblock %}
-
-<head>    
+{% extends "layout.html" %}
+{% block title %}Popular{% endblock %}
+{% block head %}
+  {{ super() }}
     {% block scripts %}
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type=text/javascript>            
             var userdata = {{userdata|tojson}};
             var achievements = {{userachievements|tojson}};
             var remove = {{remove}};
-            console.log(remove);
-
-            $('#editProfile').click(function(){
+            $(document).on('click', '#editProfile', function(){
                 window.location.href='/editProfile';
-             });
-
+            });
             $(document).ready(function() { 
                 if(remove == 1){
                     $('#editProfile').remove();
@@ -39,59 +32,43 @@ Quizia
                 }  
             });
         </script>
-    {{super()}}
-{% endblock %}    
-</head>
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+    {% endblock %}
 {% endblock %}
-
 {% block content %}
-    <main class="main" id="main">
-        {% include "headerTemplate.html" ignore missing %}
-        {% include "navbar.html" ignore missing %}
-        <div class="content" id="content">
-            <h3 class="centeredHeader" id="username">testUser's profile</h3> 
-            <div id="userprofile" class="userprofile">
-                <img class="profPic" id="profPic" name="profPic "src="" alt="itBroke" width="200" height="200">
-                <div id="userdata" class="userdata">                    
-                    <div>
-                        <h3>Introduction</h3>
-                        <p id="introduction"></p>
-                    </div>
-                    <div>
-                        <h3>Played quizzes</h3>
-                        <p id="playedQuizzes"></p>
-                    </div>
-                    <div>
-                        <h3>Challenge score</h3>
-                        <p id="challengeScore"></p>
-                    </div>
-                    <div>
-                        <h3>Total score</h3>
-                        <p id="totalScore"></p>
-                    </div>
-                    <div>
-                        <h3>Created quizzes</h3>
-                        <p id="createdQuizzes"></p>
-                    </div>
-                    <div>
-                        <h3>Member since</h3>
-                        <p id="memberSince"></p>
-                    </div>
-                </div>
-                <h3 class="centeredHeader">Earned achievements</h3> 
-                <div id="earnedAchievements" class="earnedAchievements">
-                </div>
-                <div class="results">
-                    <button type="button" id="editProfile" class="greenButton">Edit profile</button>
-                </div>
+    <h3 class="centeredHeader" id="username">testUser's profile</h3> 
+    <div id="userprofile" class="userprofile">
+        <img class="profPic" id="profPic" name="profPic "src="" alt="itBroke" width="200" height="200">
+        <div id="userdata" class="userdata">                    
+            <div>
+                <h3>Introduction</h3>
+                <p id="introduction"></p>
+            </div>
+            <div>
+                <h3>Played quizzes</h3>
+                <p id="playedQuizzes"></p>
+            </div>
+            <div>
+                <h3>Challenge score</h3>
+                <p id="challengeScore"></p>
+            </div>
+            <div>
+                <h3>Total score</h3>
+                <p id="totalScore"></p>
+            </div>
+            <div>
+                <h3>Created quizzes</h3>
+                <p id="createdQuizzes"></p>
+            </div>
+            <div>
+                <h3>Member since</h3>
+                <p id="memberSince"></p>
             </div>
         </div>
-    </main>   
-    <footer class="footer" id="footer">
-        footer text
-    </footer> 
+        <h3 class="centeredHeader">Earned achievements</h3> 
+        <div id="earnedAchievements" class="earnedAchievements">
+        </div>
+        <div class="results">
+            <button type="button" id="editProfile" class="greenButton">Edit profile</button>
+        </div>
+    </div>
 {% endblock %}

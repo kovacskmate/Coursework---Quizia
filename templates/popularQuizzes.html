@@ -1,81 +1,62 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}
-Quizia
-{% endblock %}
-
-<head>
+{% extends "layout.html" %}
+{% block title %}Popular{% endblock %}
+{% block head %}
+  {{ super() }}
 	{% block scripts %}
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type=text/javascript>            
-            var popular = {{data|tojson}};
-            var page = {{page}};
-            var disableNext = {{disableNext}};
-            console.log(disableNext);
-            var startNumber = page * 20 - 19;
-            $('#nextPage').click(function(){
-                window.location.href='/popular/' + (page+1);
-             });
-            $('#prevPage').click(function(){
-                window.location.href='/popular/' + (page-1);
-            });            
-			$(document).ready(function() {
-                if(popular.length <= 0){
-                    $("#popularQuizUL").append('<p style="margin:auto; text-align:center;">No quizzes</p>');                    
-                } else{
-                    for(i = 0; i < popular.length; i++){
-                        $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + popular[i][3] + '</p><p>' + popular[i][1] + '</p><p>' + popular[i][4] + '</p><p>' + popular[i][2] + '</p><p><a href=/play/' + popular[i][0] + '>Play</a></p></li>');
-                    }
-                }  
-                if (page == 1){
-                    $("#prevPage").prop('disabled', true);
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>            
+        var popular = {{data|tojson}};
+        var page = {{page}};
+        var disableNext = {{disableNext}};
+        console.log(disableNext);
+        var startNumber = page * 20 - 19;
+        $(document).on('click', '#nextPage', function(){
+            window.location.href='/popular/' + (page+1);
+         });
+         $(document).on('click', '#prevPage', function(){
+            window.location.href='/popular/' + (page-1);
+        });            
+        $(document).ready(function() {
+            if(popular.length <= 0){
+                $("#popularQuizUL").append('<p style="margin:auto; text-align:center;">No quizzes</p>');                    
+            } else{
+                for(i = 0; i < popular.length; i++){
+                    $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + popular[i][3] + '</p><p>' + popular[i][1] + '</p><p>' + popular[i][4] + '</p><p>' + popular[i][2] + '</p><p><a href=/play/' + popular[i][0] + '>Play</a></p></li>');
                 }
-                if(disableNext == 1){
-                    $("#nextPage").prop('disabled', true);
-                }
-            });
-		</script>
-	{{super()}}
-{% endblock %}    
-</head>
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+            }  
+            if (page == 1){
+                $("#prevPage").prop('disabled', true);
+            }
+            if(disableNext == 1){
+                $("#nextPage").prop('disabled', true);
+            }
+        });
+    </script>
+  {% endblock %}
 {% endblock %}
 
-{% block content %}
-    <main class="main" id="main">
-        {% include "headerTemplate.html" ignore missing %}
-        {% include "navbar.html" ignore missing %}
-        <div class="content" id="content">
-            <h3 class="centeredHeader">Quizzes ranked by popularity</h3>
-            <div id="topPopularQuizzes">                
-                <div id="popularQuiz" class="listHolderBox">
-                    <ul id="popularQuizUL">
-                        <li class="flex-toplist makeBold">
-                            <p>Rank</p>
-                            <p>Name</p>
-                            <p>Category</p>
-                            <p>Plays</p>
-                            <p>Made by</p>
-                            <p>Play quiz</p>
-                        </li>
-                    </ul>                    
-                    <div id="pagingButtonsMain" class="pagingButtonsMain">
-                        <div id="buttonLeft" class="pagingButtonsDiv">
-                            <button type="button" id="prevPage" class="pagingButtons floatRight" style="margin:auto;"><</button>
-                        </div>
-                        <div id="buttonRight" class="pagingButtonsDiv">
-                            <button type="button" id="nextPage" class="pagingButtons floatLeft" style="margin:auto;">></button>        
-                        </div>                   
-                    </div> 
-                </div>                
-            </div>             
-        </div>
-    </main>   
-    <footer class="footer" id="footer">
-        footer text
-    </footer> 
+{% block content %}        
+    <h3 class="centeredHeader">Quizzes ranked by popularity</h3>
+    <div id="topPopularQuizzes">                
+        <div id="popularQuiz" class="listHolderBox">
+            <ul id="popularQuizUL">
+                <li class="flex-toplist makeBold">
+                    <p>Rank</p>
+                    <p>Name</p>
+                    <p>Category</p>
+                    <p>Plays</p>
+                    <p>Made by</p>
+                    <p>Play quiz</p>
+                </li>
+            </ul>                    
+            <div id="pagingButtonsMain" class="pagingButtonsMain">
+                <div id="buttonLeft" class="pagingButtonsDiv">
+                    <button type="button" id="prevPage" class="pagingButtons floatRight" style="margin:auto;"><</button>
+                </div>
+                <div id="buttonRight" class="pagingButtonsDiv">
+                    <button type="button" id="nextPage" class="pagingButtons floatLeft" style="margin:auto;">></button>        
+                </div>                   
+            </div> 
+        </div>                
+    </div> 
 {% endblock %}

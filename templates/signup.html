@@ -1,15 +1,10 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}
-Sign Up
-{% endblock %}
-
+{% block title %}Quizia - Register{% endblock %}
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
 {% endblock %}
-
 {% block content %}
     {% include "headerTemplate.html" ignore missing %}
     <div class="login">
@@ -23,5 +18,7 @@ Sign Up
         </form>
         <a href="login"><button class="greenButton floatRight">Back to login</button></a>
     </div>    
-    {% include "footerTemplate.html" ignore missing %}
+    <footer class="footerBottom" id="footer">
+        footer text
+    </footer> 
 {% endblock %}

@@ -1,29 +1,10 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}
-Quizia
-{% endblock %}
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
-{% endblock %}
-
-{% block content %}
-    <main class="main" id="main">
-        {% include "headerTemplate.html" ignore missing %}
-        {% include "navbar.html" ignore missing %}
-        <div class="content flexCenter" id="content">         
-            <h3 class="centeredHeader">Categories</h3>          
-            <div id="categories" name="categories" class="categories">
-                {% for category in categories %}
-                    <a href="/categories/{{ category }}/1">{{ category }}
-                {% endfor %}
-            </div>
-        </div>
-    </main>   
-    <footer class="footer" id="footer">
-        footer text change test
-    </footer> 
+{% extends "layout.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}       
+    <h3 class="centeredHeader">Categories</h3>          
+    <div id="categories" name="categories" class="categories">
+        {% for category in categories %}
+            <a href="/categories/{{ category }}/1">{{ category }}</a>
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -1,128 +1,90 @@
-	<!-- {% extends "bootstrap/base.html" %}
-	{% import "bootstrap/wtf.html" as wtf %} -->
-
-	{% block title %}
-	Quizia
-	{% endblock %}
-
-	<head>
-		<!-- Custom Javascript loaded before Bootstrap’s javascript code: -->
-			<!-- https://embed.plnkr.co/plunk/oyaVFn -->
-		{% block scripts %}
-			<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-			<script type=text/javascript>
-				var questionNumber = 0;		
-
-				$(document).ready(function() {								
-					$.getJSON('/_getcategories', function(data) {
-						for (i = 0; i < data.result.length; i++) {
-							var category = new Option(data.result[i][1], data.result[i][0]);
-							$(category).html(data.result[i][1]);
-							$("#selectCategory").append(category)
-						}
-					});
-					AddQuestion();
-				});
-
-				$("#addQuestion").click(function () {										
-					AddQuestion();
-				});
-				
-				$("#removeQuestion").click(function () {
-					RemoveQuestion();		
-				});
-
-				$("#saveQuizToDB").click(function () {
-					if($("form")[0].checkValidity()){
-						GetAndSaveQuiz();
-					} else{
-						$("form")[0].reportValidity();
-					}					
-				});
-
-				function AddQuestion(){					
-					questionNumber++;
-					console.log(questionNumber);
-					$("#questions").append('<div id="question' + questionNumber + '" class="question"><h3 style="padding:5px 0px 0px 10px">Question ' + questionNumber + ':</h3><label for="">Question</label><input type="text" name="questionQ' + questionNumber + '" id="questionQ' + questionNumber + '"  ><label for="">Answer1</label><input type="text" name="answer1' + questionNumber + '" id="answer1' + questionNumber + '" required><label for="">Answer2</label><input type="text" name="answer2' + questionNumber + '" id="answer2' + questionNumber + '" required> <label for="">Answer3</label><input type="text" name="answer3' + questionNumber + '" id="answer3' + questionNumber + '" required><label for="">Answer4</label><input type="text" name="answer4' + questionNumber + '" id="answer4' + questionNumber + '" required><div class="questionSection"><label for="">Question image</label><input type="file" accept="image/x-png,image/jpg,image/jpeg" name="image' + questionNumber + '" id="image' + questionNumber + '"  ><label for="">Correct answer</label> <select name="correctAnswer' + questionNumber + '" id="correctAnswer' + questionNumber + '" required><option value="">...</option> <option value="answer1">a</option><option value="answer2">b</option><option value="answer3">c</option><option value="answer4">d</option></select><br><label for="">Time limit</label> <input type="number" min="1" max="999" name="timeLimit' + questionNumber + '" id="timeLimit' + questionNumber + '" required></div></div>');
-					document.getElementById('numberOfQuestions').value = questionNumber;
-					if(questionNumber > 1){
-						console.log("trying to enable button");
-						$("#removeQuestion").prop('disabled', false);
-					}
+{% extends "layout.html" %}
+{% block title %}Create{% endblock %}
+{% block head %}
+  {{ super() }}
+	{% block scripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type=text/javascript>
+		var questionNumber = 0;
+		$(document).ready(function() {								
+			$.getJSON('/_getcategories', function(data) {
+				for (i = 0; i < data.result.length; i++) {
+					var category = new Option(data.result[i][1], data.result[i][0]);
+					$(category).html(data.result[i][1]);
+					$("#selectCategory").append(category)
 				}
-
-				function RemoveQuestion(){					
-					if(questionNumber > 1){
-						$("#question" + questionNumber).remove();
-						questionNumber--;
-						if(questionNumber <= 1){
-							console.log("trying to disable button");
-							$("#removeQuestion").prop('disabled', true);
-						}
-					}
-					console.log(questionNumber);	
+			});
+			AddQuestion();
+		});
+		$(document).on('click', '#addQuestion', function(){										
+			AddQuestion();
+		});		
+		$(document).on('click', '#removeQuestion', function(){
+			RemoveQuestion();		
+		});
+		$(document).on('click', '#saveQuizToDB', function() {
+			if($("form")[0].checkValidity()){
+				GetAndSaveQuiz();
+			} else{
+				$("form")[0].reportValidity();
+			}					
+		});
+		function AddQuestion(){					
+			questionNumber++;
+			$("#questions").append('<div id="question' + questionNumber + '" class="question"><h3 style="padding:5px 0px 0px 10px">Question ' + questionNumber + ':</h3><label for="">Question</label><input type="text" name="questionQ' + questionNumber + '" id="questionQ' + questionNumber + '"  ><label for="">Answer1</label><input type="text" name="answer1' + questionNumber + '" id="answer1' + questionNumber + '" required><label for="">Answer2</label><input type="text" name="answer2' + questionNumber + '" id="answer2' + questionNumber + '" required> <label for="">Answer3</label><input type="text" name="answer3' + questionNumber + '" id="answer3' + questionNumber + '" required><label for="">Answer4</label><input type="text" name="answer4' + questionNumber + '" id="answer4' + questionNumber + '" required><div class="questionSection"><label for="">Question image</label><input type="file" accept="image/x-png,image/jpg,image/jpeg" name="image' + questionNumber + '" id="image' + questionNumber + '"  ><label for="">Correct answer</label> <select name="correctAnswer' + questionNumber + '" id="correctAnswer' + questionNumber + '" required><option value="">...</option> <option value="answer1">a</option><option value="answer2">b</option><option value="answer3">c</option><option value="answer4">d</option></select><br><label for="">Time limit</label> <input type="number" min="1" max="999" name="timeLimit' + questionNumber + '" id="timeLimit' + questionNumber + '" required></div></div>');
+			document.getElementById('numberOfQuestions').value = questionNumber;
+			if(questionNumber > 1){
+				$("#removeQuestion").prop('disabled', false);
+			}
+		}
+		function RemoveQuestion(){					
+			if(questionNumber > 1){
+				$("#question" + questionNumber).remove();
+				questionNumber--;
+				if(questionNumber <= 1){
+					$("#removeQuestion").prop('disabled', true);
 				}
-
-				function GetAndSaveQuiz(){					
-					$.ajax({
-						url: "/_saveQuizToDB",
-						type: "POST",
-						dataType: "JSON",
-						data: new FormData(document.getElementById("form")),
-						processData: false,
-						contentType: false,
-						success: function (responseData)
-						{
-							console.log(responseData);
-							$("#results").text(responseData);							
-						},
-						error: function (responseData)
-						{	
-							$("#results").text(responseData);
-						}
-					});  
-				}								
-			</script>
-		{{super()}}
-	{% endblock %}    
-	</head>
-
-	{% block styles %}
-	{{super()}}
-	<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
-	{% endblock %}
-
-
-	{% block content %}
-		<main class="main" id="main">
-			{% include "headerTemplate.html" ignore missing %}
-			{% include "navbar.html" ignore missing %}
-			<div class="content">
-				<h3 class="centeredHeader">Create a quiz</h3>
-				<div id="quizCreator" class="quizCreator">
-					<form id="form" name="form" enctype="multipart/form-data" action="">
-						<input type="text" name="numberOfQuestions" id="numberOfQuestions" style="display:none;">
-						<label for="">Quiz name</label>
-						<input type="text" name="quizName" id="quizName" required>
-						<label for="">Select category</label>
-						<select name="selectCategory" id="selectCategory" required>
-							<option value="">...</option>
-						</select>						
-						<div id="questions" class="questions">
-
-						</div>
-						<button type="button" id="addQuestion" class="greenButton rightMargin">Add question</button>
-						<button type="button" id="removeQuestion" class="greenButton" disabled>Remove last question</button>
-						<button type="button" id="saveQuizToDB" class="greenButton floatRight">Save</button>
-					</form>
-					<div id="results" class="results">
-
-					</div>
-			</div>
-		</main>   
-		<footer class="footer" id="footer">
-			footer text
-		</footer> 
-	{% endblock %}
+			}	
+		}
+		function GetAndSaveQuiz(){					
+			$.ajax({
+				url: "/_saveQuizToDB",
+				type: "POST",
+				dataType: "JSON",
+				data: new FormData(document.getElementById("form")),
+				processData: false,
+				contentType: false,
+				success: function (responseData)
+				{
+					$("#results").text(responseData);							
+				},
+				error: function (responseData)
+				{	
+					$("#results").text(responseData);
+				}
+			});  
+		}								
+	</script>
+  {% endblock %}
+{% endblock %}
+{% block content %}
+	<h3 class="centeredHeader">Create a quiz</h3>
+	<div id="quizCreator" class="quizCreator">
+		<form id="form" name="form" enctype="multipart/form-data" action="">
+			<input type="text" name="numberOfQuestions" id="numberOfQuestions" style="display:none;">
+			<label for="">Quiz name</label>
+			<input type="text" name="quizName" id="quizName" required>
+			<label for="">Select category</label>
+			<select name="selectCategory" id="selectCategory" required>
+				<option value="">...</option>
+			</select>						
+			<div id="questions" class="questions"></div>
+			<button type="button" id="addQuestion" class="greenButton rightMargin">Add question</button>
+			<button type="button" id="removeQuestion" class="greenButton" disabled>Remove last question</button>
+			<button type="button" id="saveQuizToDB" class="greenButton floatRight">Save</button>
+		</form>
+		<div id="results" class="results"></div>
+	</div>
+{% endblock %}
 
 
