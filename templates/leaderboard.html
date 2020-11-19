@@ -25,7 +25,7 @@ Quizia
 
 			$(document).ready(function() { 
                 if(players.length <= 0){
-                    $("#playersUL").append('<p>No players</p>');
+                    $("#playersUL").append('<p style="margin:auto; text-align:center;">No players</p>');
                 } else{
                     for(i = 0; i < players.length; i++){
                         $("#playersUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p><a href="/profile/'+players[i][0]+'">' + players[i][1] + '</a></p><p>' + players[i][4] + '</p><p>' + players[i][3] + '</p><p>' + players[i][5] + '</p><p>' + players[i][2] + '</p></li>');

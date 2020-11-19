@@ -22,7 +22,7 @@ Quizia
             });            
 			$(document).ready(function() {
                 if(popular.length <= 0){
-                    $("#popularQuizUL").append('<p>No quizzes</p>');                    
+                    $("#popularQuizUL").append('<p style="margin:auto; text-align:center;">No quizzes</p>');                    
                 } else{
                     for(i = 0; i < popular.length; i++){
                         $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + popular[i][3] + '</p><p>' + popular[i][1] + '</p><p>' + popular[i][4] + '</p><p>' + popular[i][2] + '</p><p><a href=/play/' + popular[i][0] + '>Play</a></p></li>');

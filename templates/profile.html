@@ -31,7 +31,7 @@ Quizia
                 $("#createdQuizzes").text(userdata[0][5]);
                 $("#memberSince").text(userdata[0][4]);
                 if(achievements.length <= 0){
-                    $("#earnedAchievements").append('<p>No achievements</p>');
+                    $("#earnedAchievements").append('<p style="margin:auto">No achievements</p>');
                 } else{
                     for(i = 0; i < achievements.length; i++){
                         $("#earnedAchievements").append('<div><img class="achievementIcon" id="achievement" name="achievement" src="' + achievements[i][2] + '" alt="itBroke" width="200" height="200"><p class="achievementDesc1">' + achievements[i][1] + '</p><p class="achievementDesc2">' + achievements[i][0] + '</p></div>');

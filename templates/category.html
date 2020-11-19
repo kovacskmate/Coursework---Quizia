@@ -9,25 +9,27 @@ Quizia
 	{% block scripts %}
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type=text/javascript>            
-            var quizzes = {{quizzes|tojson}};
+            var data = {{data|tojson}};
             var page = {{page}};
-            var category = {{category|tojson}};
+            var category = "test";
+            var disableNext = {{disableNext}};
             var startNumber = page * 20 - 19;
 
             $('#nextPage').click(function(){
-                window.location.href='/categories/'+ category +'/' + (page+1);
+                window.location.href='/categories/'+ data[0][1] +'/' + (page+1);
              });
 
             $('#prevPage').click(function(){
-                window.location.href='/categories/'+ category +'/' + (page-1);
+                window.location.href='/categories/'+ data[0][1] +'/' + (page-1);
             });
 
-			$(document).ready(function() { 
-                if(quizzes.length <= 0){
-                    $("#popularQuizUL").append('<p>No quizzes</p>');
+			$(document).ready(function() {                 
+                if(data.length <= 0){
+                    $("#popularQuizUL").append('<p style="margin:auto; text-align:center;">No quizzes</p>');
                 } else{
-                    for(i = 0; i < quizzes.length; i++){
-                        $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + quizzes[i][3] + '</p><p>' + quizzes[i][1] + '</p><p>' + quizzes[i][4] + '</p><p>' + quizzes[i][2] + '</p><p><a href=/play/' + quizzes[i][0] + '>Play</a></p></li>');
+                    $("#title").text(data[0][1] + " quizzes");
+                    for(i = 0; i < data.length; i++){
+                        $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + data[i][3] + '</p><p>' + data[i][1] + '</p><p>' + data[i][4] + '</p><p>' + data[i][2] + '</p><p><a href=/play/' + data[i][0] + '>Play</a></p></li>');
                     }
                 }  
                 if (page == 1){
@@ -51,7 +53,7 @@ Quizia
         {% include "headerTemplate.html" ignore missing %}
         {% include "navbar.html" ignore missing %}
         <div class="content" id="content">           
-            <h3 class="centeredHeader">{{category}} quizzes</h3>                
+            <h3 class="centeredHeader" id="title">Quizzes</h3>                
             <div id="popularQuiz" class="listHolderBox">
                 <ul id="popularQuizUL">
                     <li class="flex-toplist makeBold">

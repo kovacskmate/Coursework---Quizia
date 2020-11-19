@@ -25,7 +25,7 @@ Quizia
 
 			$(document).ready(function() { 
                 if(myQuizzes.length <= 0){
-                    $("#myQuizzesUL").append('<p>No quizzes</p>');
+                    $("#myQuizzesUL").append('<p style="margin:auto; text-align:center;">No quizzes</p>');
                 } else{
                     for(i = 0; i < myQuizzes.length; i++){
                         $("#myQuizzesUL").append('<li class="flex-toplist"><p>' + (startNumber++) +'.</p><p>' + myQuizzes[i][3] + '</p><p>' + myQuizzes[i][1] + '</p><p>' + myQuizzes[i][4] + '</p><p>' + myQuizzes[i][2] + '</p><p><a href=/play/' + myQuizzes[i][0] + '>Play</a></p></li>');

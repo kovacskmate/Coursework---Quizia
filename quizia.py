@@ -67,11 +67,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 
 #todo: better templating
 #todo: improve editProfile validation
-#todo: create 404 page
+#todo: style 404 page
 #todo: improve css and html
 #todo: separate code to different files
-#todo: paging is buggy on category pages
-#todo: profile default informations and styling
 
 UPLOAD_FOLDER = 'Quizia\static\questionImages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -156,21 +154,30 @@ def listcategories():
     #     page.append(str(row)) 
     return ''.join('b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"')
 
+#if id < 0 or id > table length return 404
 @app.route('/play/<quiz_id>')
 @login_required
 def play(quiz_id):
     db = get_db() 
     cur = db.cursor()  
-    sql = "UPDATE quizzes SET plays = plays + 1 WHERE quiz_id = {}"
-    cur.execute(sql.format(quiz_id))
-    db.commit()        
-    sql = "SELECT qu.quiz_name, u.username, qs.question_id, qs.quiz_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts FROM questions qs JOIN quizzes qu ON qs.quiz_id = qu.quiz_id JOIN user u ON qu.user_id = u.id WHERE qs.quiz_id = {}"
-    questions = []    
-    cur.execute(sql.format(quiz_id))
-    #idea from https://stackoverflow.com/questions/3286525/return-sql-table-as-json-in-python
-    r = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
-    userid = current_user.id
-    return render_template('playQuiz.html', questions=r, name=current_user.username, userid=userid)
+    sql = "SELECT COUNT(*) FROM quizzes WHERE quiz_id = " + quiz_id + ""
+    result = cur.execute(sql)
+    rowcount = result.fetchall()
+    if rowcount[0][0] > 0:
+        db = get_db() 
+        cur = db.cursor()  
+        sql = "UPDATE quizzes SET plays = plays + 1 WHERE quiz_id = {}"
+        cur.execute(sql.format(quiz_id))
+        db.commit()        
+        sql = "SELECT qu.quiz_name, u.username, qs.question_id, qs.quiz_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts FROM questions qs JOIN quizzes qu ON qs.quiz_id = qu.quiz_id JOIN user u ON qu.user_id = u.id WHERE qs.quiz_id = {}"
+        questions = []    
+        cur.execute(sql.format(quiz_id))
+        #idea from https://stackoverflow.com/questions/3286525/return-sql-table-as-json-in-python
+        r = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
+        userid = current_user.id
+        return render_template('playQuiz.html', questions=r, name=current_user.username, userid=userid)
+    else:
+        return render_template('404.html'), 404
 
 @app.route('/categories')
 @login_required
@@ -181,17 +188,6 @@ def categories():
     for category in db.cursor().execute(sql):
         categories.append(category[0])
     return render_template('categories.html', categories=categories, name=current_user.username)
-
-@app.route('/categories/<category>/<page>')
-@login_required
-def categoriesCategory(category, page):
-    db = get_db()
-    startLimit = int(page) * 20 - 20
-    sql = "SELECT quiz_id, c.category_name, u.username, quiz_name, plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id WHERE c.category_name = '{}' LIMIT {}, {}"
-    quizzes = []        
-    for quiz in db.cursor().execute(sql.format(category,startLimit,20)):
-        quizzes.append(quiz)
-    return render_template('category.html', quizzes=quizzes, name=current_user.username, category=category, page=page)    
 
 @app.route('/randomQuiz')
 @login_required
@@ -218,15 +214,30 @@ def paging(page, sql, template):
     if len(rowcount) == 0 and int(page) == 1:
         return render_template(template, name=current_user.username, data=data, page=page, disableNext=disableNext)
     elif len(rowcount) == 0 and int(page) != 0:
-        return "404"
+        return render_template('404.html'), 404
     elif int(page) < 1:
-        return "404"
+        return render_template('404.html'), 404
     else:
         for item in cur.execute(sql.format(startLimit, 20)):
             data.append(item)
         if len(rowcount) > 20:
             disableNext = 0
         return render_template(template, name=current_user.username, data=data, page=page, disableNext=disableNext)
+
+@app.route('/categories/<category>/<page>')
+@login_required
+def categoriesCategory(category, page):
+    db = get_db() 
+    cur = db.cursor()  
+    sql = "SELECT COUNT(*) FROM categories WHERE category_name = '" + category + "'"
+    result = cur.execute(sql)
+    rowcount = result.fetchall()
+    if rowcount[0][0] > 0:
+        sql = "SELECT quiz_id, c.category_name, u.username, quiz_name, plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id WHERE c.category_name = '" + category + "' LIMIT {}, {}"
+        template = 'category.html'
+        return paging(page, sql, template) 
+    else:
+        return render_template('404.html'), 404
 
 @app.route('/popular/<page>')
 @login_required
@@ -426,18 +437,27 @@ def _updateChallengedb():
 @app.route('/profile/<id>')
 @login_required
 def profile(id):
+    #check if user exists
     db = get_db()
     if id == 'me' or int(id) == current_user.id:
         userid = current_user.id
         remove = 0
     else:
         userid = id
-        remove = 1
-    sql = "SELECT u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, (SELECT COUNT(*) FROM quizzes q WHERE q.user_id = {}) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = {}) * 15) as score FROM user u WHERE u.id = {}"
-    userdata = db.cursor().execute(sql.format(userid, userid, userid)).fetchall()       
-    sql = "SELECT a.achievement_name, a.description, a.icon FROM achievements a JOIN earned_achievements e ON a.achievement_id = e.achievement_id WHERE e.user_id = {}"
-    userachievements = db.cursor().execute(sql.format(userid)).fetchall()
-    return render_template('profile.html', name=current_user.username, userdata=userdata, userachievements=userachievements, remove=remove)
+        remove = 1    
+    cur = db.cursor()  
+    sql = "SELECT COUNT(*) FROM user WHERE id = " + str(userid) + ""
+    result = cur.execute(sql)
+    rowcount = result.fetchall()
+    print(rowcount)
+    if rowcount[0][0] > 0:
+        sql = "SELECT u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, (SELECT COUNT(*) FROM quizzes q WHERE q.user_id = {}) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = {}) * 15) as score FROM user u WHERE u.id = {}"
+        userdata = db.cursor().execute(sql.format(userid, userid, userid)).fetchall()       
+        sql = "SELECT a.achievement_name, a.description, a.icon FROM achievements a JOIN earned_achievements e ON a.achievement_id = e.achievement_id WHERE e.user_id = {}"
+        userachievements = db.cursor().execute(sql.format(userid)).fetchall()
+        return render_template('profile.html', name=current_user.username, userdata=userdata, userachievements=userachievements, remove=remove)
+    else:
+        return render_template('404.html'), 404
 
 @app.route('/editProfile')
 @login_required
@@ -554,7 +574,7 @@ def signup():
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         today = date.today()
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password, played_quizzes=0, profile_pic=" ", introduction=" ", reg_date=today, challenge_score=0)
+        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password, played_quizzes=0, profile_pic="/static/profilePictures/defaultProfPic.png", introduction="No introduction", reg_date=today, challenge_score=0)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('login'))
@@ -584,6 +604,11 @@ def home():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(host='192.168.1.72', port=3232, debug=True)
