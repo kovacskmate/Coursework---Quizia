@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
 {% endblock %}
 {% block content %}
-    {% include "headerTemplate.html" ignore missing %}
     <div class="login">
         <form class="form-signin" method="POST" action="/signup">
             <h2 class="loginHeader">Sign up</h2>
@@ -19,6 +18,6 @@
         <a href="login"><button class="greenButton floatRight">Back to login</button></a>
     </div>    
     <footer class="footerBottom" id="footer">
-        footer text
+        <img height="27" src="/static/logo/logoQuizia.png" alt="logo" style="padding:0; margin:0">
     </footer> 
 {% endblock %}

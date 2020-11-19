@@ -55,18 +55,20 @@ body{
 .header {
   top: 0;
   /* background-color: #474B4F; */
-  padding-top: 8px;
-  padding-bottom: 8px;
   font-size: 17pt;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-top: 0px;
   overflow: hidden;
+  height: 30px;
 }
 .headerLeft{
-  padding-left: 10px;
+  padding-left: 26px;
   margin: 0px;
   float:left;
 }
 .headerRight{
-  padding-right: 10px;
+  padding-right: 26px;
   margin: 0px;
   float: right;
 }

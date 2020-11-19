@@ -13,7 +13,7 @@
                 $('#introduction').attr('placeholder', userdata[0][2]);
             });            
 
-            $("#saveUserdata").click(function () {
+            $(document).on('click', '#saveUserdata', function() {
                 SaveUserdataToDB();
             });
             

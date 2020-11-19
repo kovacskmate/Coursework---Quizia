@@ -65,9 +65,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 
-#todo: better templating
+#todo: handle invlaid username or password
 #todo: improve editProfile validation
-#todo: style 404 page
 #todo: improve css and html
 #todo: separate code to different files
 
