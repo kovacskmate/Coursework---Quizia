@@ -82,7 +82,8 @@
             if(questionNumber >= quiz.length){
                 $("#results").append("</br>There are no more questions");
                 updateDB.numberOfQuestions = questionNumber;
-                $.getJSON('/_updatedb', updateDB, function(data) {
+                updateDB.correctNumber = correctNumber;
+                $.getJSON('/_updateChallengedb', updateDB, function(data) {
                     
                 });
             } else{
