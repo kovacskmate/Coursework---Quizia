@@ -1,5 +1,6 @@
 #the path for image folders and the database is different on uni vm's than it is on windows
 #todo: separate code to different files
+
 from flask import Flask, g 
 import sqlite3, os, atexit, time, schedule, random, uuid
 from flask import Flask, render_template, redirect, url_for, jsonify, request, session, make_response, json, flash
@@ -15,77 +16,54 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from apscheduler.schedulers.background import BackgroundScheduler
 from PIL import Image
 
-def checkForAchievements():
-    with app.app_context():
-        db = get_db()
-        sql = "SELECT * FROM achievements"       
-        achievements = db.cursor().execute(sql).fetchall()
-        result = ''
-        for item in achievements:
-            achievement_id = item[0]
-            method_name = item[3]
-            condition = item[4]
-            #this way of calling a method by its name is from a stackoverflow page - add link
-            possibles = globals().copy()
-            possibles.update(locals())
-            method = possibles.get(method_name)
-            if not method:
-                raise NotImplementedError("Method %s not implemented" % method_name)
-            result = result + method(achievement_id, condition)
-        return result
-
-def createDailyChallenge():
-    with app.app_context():
-        db = get_db()
-        sql = "DELETE FROM challenge_questions"
-        db.cursor().execute(sql)
-        db.commit()
-        sql = "DELETE FROM challenge_progress"
-        db.cursor().execute(sql)
-        db.commit()
-        sql = "SELECT count(*) FROM questions"    
-        numberOfQuestions = db.cursor().execute(sql).fetchone()        
-        questionIds = random.sample(range(1,numberOfQuestions[0]), 10)
-        questionIDs = []
-        for item in questionIds:
-            questionId = []
-            questionId.append(item)
-            questionIDs.append(questionId)
-        cursor = db.cursor()
-        cursor.executemany("INSERT INTO challenge_questions (question_id) VALUES(?);", questionIDs)
-        db.commit()
-        return str(questionIDs)
-
-#should only be checked at midnight
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=checkForAchievements, trigger="interval", seconds=10)
-scheduler.add_job(func=createDailyChallenge, trigger="interval", seconds=10)
-scheduler.start()
-atexit.register(lambda: scheduler.shutdown())
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"'
+
 #local:
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 #uni vm:
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
+
 #local:
 UPLOAD_FOLDER = 'Quizia\static\questionImages'
 #uni vm:
 #UPLOAD_FOLDER = 'static/questionImages'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 #local:
 UPLOAD_FOLDER2 = 'Quizia\static\profilePictures'
 #uni vm:
 #UPLOAD_FOLDER2 = 'static/profilePictures'
 app.config['UPLOAD_FOLDER2'] = UPLOAD_FOLDER2
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
+
 #local:
 db_location = 'Quizia\database\quizia.db'
 #uni vm:
 #db_location = 'database/quizia.db'
+
+#db-----------------------------------------------------------
+def init_db():
+    with app.app_context():
+        db = get_db()
+        with app.open_resource('database/schema.sql', mode='r') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
+
+def get_db():
+    db = getattr(g, 'db', None)
+    if db is None:
+        db = sqlite3.connect(db_location)
+        g.db = db
+    return db
+#db end-----------------------------------------------------------
+
+#login, register-----------------------------------------------------------
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -116,7 +94,6 @@ class LoginForm(FlaskForm):
 
     def validate(self):
         rv = FlaskForm.validate(self)
-        print(self.username.data)
 
         if not rv:
             return False
@@ -162,48 +139,64 @@ class RegisterForm(FlaskForm):
         self.user = user
         return True
 
-def init_db():
-    with app.app_context():
-        db = get_db()
-        with app.open_resource('database/schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            if check_password_hash(user.password, form.password.data):
+                login_user(user, remember=form.remember.data)
+                return redirect(url_for('home'))
+        return '<h1>Invalid username or password: ' + form.username.data + ' ' + form.password.data + '</h1>'
+    return render_template('login.html', form=form)
 
-def get_db():
-    db = getattr(g, 'db', None)
-    if db is None:
-        db = sqlite3.connect(db_location)
-        g.db = db
-    return db
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data, method='sha256')
+        today = date.today()
+        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password, played_quizzes=0, profile_pic="/static/profilePictures/defaultProfPic.png", introduction="No introduction", reg_date=today, challenge_score=0)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('login'))
+    return render_template('signup.html', form=form)
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+#login, register end-----------------------------------------------------------
+
+#home-----------------------------------------------------------
 @app.route('/')
 @login_required
 def index():   
     return redirect(url_for('home'))
 
-@app.route('/listusers')
+@app.route('/home')
 @login_required
-def listusers():
+def home():
     db = get_db()
-    page = []
-    page.append(' ')
-    sql = "SELECT * FROM user"
-    for row in db.cursor().execute(sql):
-        page.append(str(row)) 
-    return ''.join(page)
+    popularQuizzes = []
+    sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id ORDER BY q.plays DESC LIMIT 3"       
+    for quiz in db.cursor().execute(sql):
+        popularQuizzes.append(quiz)
 
-@app.route('/querydatabase')
-@login_required
-def listcategories():
-    db = get_db()
-    page = []
-    page.append(' ')
-    sql = "SELECT u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, (SELECT COUNT(*) FROM quizzes q WHERE q.user_id = 1) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = 1) * 15) as score FROM user u WHERE u.id = 1"
-    categoryIDs = db.cursor().execute(sql).fetchall()
-    for item in categoryIDs:
-        page.append(str(item))
-    return ''.join('b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"')
+    top3players = []
+    sql = "SELECT u.id, u.username, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score, (SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) as numberOfAchievements, u.played_quizzes, u.challenge_score FROM user u ORDER BY score DESC LIMIT 3"   
+    for player in db.cursor().execute(sql):
+        top3players.append(player)
+    newestQuizzes = []
+    sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id ORDER BY q.quiz_id DESC LIMIT 3"      
+    for quiz in db.cursor().execute(sql):
+        newestQuizzes.append(quiz)
+    return render_template('home.html', name=current_user.username, popularQuizzes=popularQuizzes, top3players=top3players, newestQuizzes=newestQuizzes)
+#home end-----------------------------------------------------------
 
+#play-----------------------------------------------------------
 @app.route('/play/<quiz_id>')
 @login_required
 def play(quiz_id):
@@ -228,6 +221,32 @@ def play(quiz_id):
     else:
         return render_template('404.html'), 404
 
+@app.route('/randomQuiz')
+@login_required
+def randomQuiz():
+    db = get_db()    
+    sql = "SELECT quiz_id FROM quizzes ORDER BY RANDOM() LIMIT 1"
+    quiz_id = db.cursor().execute(sql).fetchone()[0]
+    return redirect(url_for('play', quiz_id=quiz_id))
+
+@app.route('/_updatedb')
+@login_required
+def _updatedb():
+    db = get_db()
+    whatToUpdate = request.args    
+    page = []
+    for item in whatToUpdate:
+        page.append(item + " " + whatToUpdate[item] + "<br>")
+    for i in range(int(whatToUpdate['numberOfQuestions'])):
+        sql = "UPDATE questions SET attempts = attempts + 1, correct_attempts = correct_attempts + ? WHERE question_id = ?"
+        db.cursor().execute(sql, (whatToUpdate['questions[' + str(i) + '][correct_attempts]'], whatToUpdate['questions[' + str(i) + '][question_id]']))    
+    sql = "UPDATE user SET played_quizzes = played_quizzes + 1 WHERE username = ?"
+    db.cursor().execute(sql, (current_user.username, ))
+    db.commit()
+    return jsonify(result=page)
+#play end-----------------------------------------------------------
+
+#categories-----------------------------------------------------------
 @app.route('/categories')
 @login_required
 def categories():
@@ -238,19 +257,95 @@ def categories():
         categories.append(category[0])
     return render_template('categories.html', categories=categories, name=current_user.username)
 
-@app.route('/randomQuiz')
+@app.route('/_getcategories')
 @login_required
-def randomQuiz():
-    db = get_db()    
-    sql = "SELECT quiz_id FROM quizzes ORDER BY RANDOM() LIMIT 1"
-    quiz_id = db.cursor().execute(sql).fetchone()[0]
-    return redirect(url_for('play', quiz_id=quiz_id))  
+def _getcategories():
+    db = get_db()
+    categories = []
+    sql = "SELECT * FROM categories"
+    for category in db.cursor().execute(sql):
+        categories.append(category)
+    return jsonify(result=categories)
+#categories end-----------------------------------------------------------
 
+#achievements-----------------------------------------------------------
+@app.route('/achievements')
+@login_required
+def achievements():
+    db = get_db()
+    sql = "SELECT * FROM achievements"
+    achievements = []        
+    for achievement in db.cursor().execute(sql):
+        achievements.append(achievement)
+    return render_template('achievements.html', achievements=achievements, name=current_user.username)   
+
+@app.route('/_checkForAchievements')
+@login_required
+def _checkForAchievements():
+    result = checkForAchievements()
+    return result
+
+def checkForAchievements():
+    with app.app_context():
+        db = get_db()
+        sql = "SELECT * FROM achievements"       
+        achievements = db.cursor().execute(sql).fetchall()
+        result = ''
+        for item in achievements:
+            achievement_id = item[0]
+            method_name = item[3]
+            condition = item[4]
+            #idea from https://stackoverflow.com/questions/7936572/python-call-a-function-from-string-name/7936588
+            possibles = globals().copy()
+            possibles.update(locals())
+            method = possibles.get(method_name)
+            if not method:
+                raise NotImplementedError("Method %s not implemented" % method_name)
+            result = result + method(achievement_id, condition)
+        return result
+
+def memberSince(achievement_id, condition):
+    db = get_db()
+    today = date.today()
+    stringDate = today.strftime("%m/%d/%Y")
+    result = ''
+    sql = "SELECT id, reg_date FROM user"
+    users = db.cursor().execute(sql).fetchall()
+    for item in users:
+        difference = datetime.now() - datetime.strptime(item[1], '%Y-%m-%d')
+        if difference.days >= int(condition):
+            result = achievement_id
+            sql = "INSERT OR IGNORE INTO earned_achievements(user_id, achievement_id) VALUES(?,?)"
+            db.cursor().execute(sql, (item[0], achievement_id))
+            db.commit()
+        else:
+            result = "didn't meet condition|"
+    return str(result)
+
+def playedQuizzes(achievement_id, condition):
+    db = get_db()
+    sql = "SELECT id, played_quizzes FROM user"
+    result = ''
+    users = db.cursor().execute(sql).fetchall()
+    for item in users:
+        if item[1] >= int(condition):
+            result = achievement_id
+            sql = "INSERT OR IGNORE INTO earned_achievements(user_id, achievement_id) VALUES(?,?)"
+            db.cursor().execute(sql, (item[0], achievement_id))
+            db.commit()
+        else:
+            result = "didn't meet condition"
+    return str(result)
+#achievements end-----------------------------------------------------------
+
+#create quiz-----------------------------------------------------------
 @app.route('/createQuiz')
 @login_required
 def createQuiz():
     return render_template('createQuiz.html', name=current_user.username, categories=categories)
+#create quiz-----------------------------------------------------------
 
+#paged pages and paging-----------------------------------------------------------
 def paging(page, sql, template):
     db = get_db() 
     cur = db.cursor()  
@@ -308,55 +403,7 @@ def leaderboard(page):
     sql = "SELECT u.id, u.username, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score, (SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) as numberOfAchievements, u.played_quizzes, u.challenge_score FROM user u ORDER BY score DESC LIMIT ?, ?"
     template = 'leaderboard.html'
     return paging(page, sql, template)
-
-@app.route('/achievements')
-@login_required
-def achievements():
-    db = get_db()
-    sql = "SELECT * FROM achievements"
-    achievements = []        
-    for achievement in db.cursor().execute(sql):
-        achievements.append(achievement)
-    return render_template('achievements.html', achievements=achievements, name=current_user.username)   
-
-@app.route('/_checkForAchievements')
-@login_required
-def _checkForAchievements():
-    result = checkForAchievements()
-    return result
-
-def memberSince(achievement_id, condition):
-    db = get_db()
-    today = date.today()
-    stringDate = today.strftime("%m/%d/%Y")
-    result = ''
-    sql = "SELECT id, reg_date FROM user"
-    users = db.cursor().execute(sql).fetchall()
-    for item in users:
-        difference = datetime.now() - datetime.strptime(item[1], '%Y-%m-%d')
-        if difference.days >= int(condition):
-            result = achievement_id
-            sql = "INSERT OR IGNORE INTO earned_achievements(user_id, achievement_id) VALUES(?,?)"
-            db.cursor().execute(sql, (item[0], achievement_id))
-            db.commit()
-        else:
-            result = "didn't meet condition|"
-    return str(result)
-
-def playedQuizzes(achievement_id, condition):
-    db = get_db()
-    sql = "SELECT id, played_quizzes FROM user"
-    result = ''
-    users = db.cursor().execute(sql).fetchall()
-    for item in users:
-        if item[1] >= int(condition):
-            result = achievement_id
-            sql = "INSERT OR IGNORE INTO earned_achievements(user_id, achievement_id) VALUES(?,?)"
-            db.cursor().execute(sql, (item[0], achievement_id))
-            db.commit()
-        else:
-            result = "didn't meet condition"
-    return str(result)
+#paged pages and paging end-----------------------------------------------------------
 
 @app.route('/_saveQuizToDB', methods=['GET', 'POST'])
 @login_required
@@ -444,21 +491,59 @@ def _saveQuizToDB():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/_updatedb')
+#dailyChallenge-----------------------------------------------------------
+@app.route('/dailyChallenge')
 @login_required
-def _updatedb():
-    db = get_db()
-    whatToUpdate = request.args    
-    page = []
-    for item in whatToUpdate:
-        page.append(item + " " + whatToUpdate[item] + "<br>")
-    for i in range(int(whatToUpdate['numberOfQuestions'])):
-        sql = "UPDATE questions SET attempts = attempts + 1, correct_attempts = correct_attempts + ? WHERE question_id = ?"
-        db.cursor().execute(sql, (whatToUpdate['questions[' + str(i) + '][correct_attempts]'], whatToUpdate['questions[' + str(i) + '][question_id]']))    
-    sql = "UPDATE user SET played_quizzes = played_quizzes + 1 WHERE username = ?"
-    db.cursor().execute(sql, (current_user.username, ))
-    db.commit()
-    return jsonify(result=page)
+def dailyChallenge():
+    db = get_db() 
+    cur = db.cursor()  
+    sql = "SELECT COUNT(user_id) FROM challenge_progress WHERE user_id = ?"
+    result = cur.execute(sql, (current_user.id, ))    
+    rowcount = result.fetchone()[0]
+    if rowcount > 0:
+        return render_template('dailyChallenge.html', questions="empty", alreadyAttempted=rowcount, name=current_user.username)
+    else:  
+        sql = "SELECT qs.question_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts FROM questions qs WHERE qs.question_id IN (SELECT * FROM challenge_questions)"
+        questions = []    
+        cur.execute(sql)
+        r = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]   
+        return render_template('dailyChallenge.html', questions=r, alreadyAttempted="empty", name=current_user.username) 
+
+@app.route('/_addUserToChallengeProgress', methods=['GET', 'POST'])
+@login_required
+def _addUserToChallengeProgress():
+    db = get_db() 
+    sql = "INSERT INTO challenge_progress (user_id, challenge_progress) VALUES (?,?)"
+    db.cursor().execute(sql, (current_user.id, 1))
+    db.commit() 
+    return jsonify("added")
+
+@app.route('/_createDailyChallenge')
+def _createDailyChallenge():
+    results = createDailyChallenge()
+    return results
+
+def createDailyChallenge():
+    with app.app_context():
+        db = get_db()
+        sql = "DELETE FROM challenge_questions"
+        db.cursor().execute(sql)
+        db.commit()
+        sql = "DELETE FROM challenge_progress"
+        db.cursor().execute(sql)
+        db.commit()
+        sql = "SELECT count(*) FROM questions"    
+        numberOfQuestions = db.cursor().execute(sql).fetchone()        
+        questionIds = random.sample(range(1,numberOfQuestions[0]), 10)
+        questionIDs = []
+        for item in questionIds:
+            questionId = []
+            questionId.append(item)
+            questionIDs.append(questionId)
+        cursor = db.cursor()
+        cursor.executemany("INSERT INTO challenge_questions (question_id) VALUES(?);", questionIDs)
+        db.commit()
+        return str(questionIDs)
 
 @app.route('/_updateChallengedb')
 @login_required
@@ -476,7 +561,9 @@ def _updateChallengedb():
     db.cursor().execute(sql, (whatToUpdate['correctNumber'], current_user.username))
     db.commit()
     return jsonify(result=page)
+#dailyChallenge end-----------------------------------------------------------
 
+#profile-----------------------------------------------------------
 @app.route('/profile/<id>')
 @login_required
 def profile(id):
@@ -557,100 +644,47 @@ def _saveUserdataToDB():
         return jsonify("Profile successfully saved")
     except Exception as inst:        
         return jsonify(str(inst))
+#profile end-----------------------------------------------------------
 
-@app.route('/dailyChallenge')
-@login_required
-def dailyChallenge():
-    db = get_db() 
-    cur = db.cursor()  
-    sql = "SELECT COUNT(user_id) FROM challenge_progress WHERE user_id = ?"
-    result = cur.execute(sql, (current_user.id, ))    
-    rowcount = result.fetchone()[0]
-    if rowcount > 0:
-        return render_template('dailyChallenge.html', questions="empty", alreadyAttempted=rowcount, name=current_user.username)
-    else:  
-        sql = "SELECT qs.question_id, qs.question, qs.time_limit, qs.image, qs.answer1, qs.answer2, qs.answer3, qs.answer4, qs.correctAnswer, qs.attempts, qs.correct_attempts FROM questions qs WHERE qs.question_id IN (SELECT * FROM challenge_questions)"
-        questions = []    
-        cur.execute(sql)
-        r = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]   
-        return render_template('dailyChallenge.html', questions=r, alreadyAttempted="empty", name=current_user.username) 
-
-@app.route('/_addUserToChallengeProgress', methods=['GET', 'POST'])
-@login_required
-def _addUserToChallengeProgress():
-    db = get_db() 
-    sql = "INSERT INTO challenge_progress (user_id, challenge_progress) VALUES (?,?)"
-    db.cursor().execute(sql, (current_user.id, 1))
-    db.commit() 
-    return jsonify("added")
-
-@app.route('/_createDailyChallenge')
-def _createDailyChallenge():
-    results = createDailyChallenge()
-    return results
-
-@app.route('/_getcategories')
-@login_required
-def _getcategories():
-    db = get_db()
-    categories = []
-    sql = "SELECT * FROM categories"
-    for category in db.cursor().execute(sql):
-        categories.append(category)
-    return jsonify(result=categories)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user:
-            if check_password_hash(user.password, form.password.data):
-                login_user(user, remember=form.remember.data)
-                return redirect(url_for('home'))
-        return '<h1>Invalid username or password: ' + form.username.data + ' ' + form.password.data + '</h1>'
-    return render_template('login.html', form=form)
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data, method='sha256')
-        today = date.today()
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password, played_quizzes=0, profile_pic="/static/profilePictures/defaultProfPic.png", introduction="No introduction", reg_date=today, challenge_score=0)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('login'))
-    return render_template('signup.html', form=form)
-
-@app.route('/home')
-@login_required
-def home():
-    db = get_db()
-    popularQuizzes = []
-    sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id ORDER BY q.plays DESC LIMIT 3"       
-    for quiz in db.cursor().execute(sql):
-        popularQuizzes.append(quiz)
-
-    top3players = []
-    sql = "SELECT u.id, u.username, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) * 15) as score, (SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = u.id) as numberOfAchievements, u.played_quizzes, u.challenge_score FROM user u ORDER BY score DESC LIMIT 3"   
-    for player in db.cursor().execute(sql):
-        top3players.append(player)
-    newestQuizzes = []
-    sql = "SELECT q.quiz_id, c.category_name, u.username, q.quiz_name, q.plays FROM quizzes q JOIN user u ON q.user_id = u.id JOIN categories c ON q.category_id = c.category_id ORDER BY q.quiz_id DESC LIMIT 3"      
-    for quiz in db.cursor().execute(sql):
-        newestQuizzes.append(quiz)
-    return render_template('home.html', name=current_user.username, popularQuizzes=popularQuizzes, top3players=top3players, newestQuizzes=newestQuizzes)
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
-
+#other-----------------------------------------------------------
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=checkForAchievements, trigger="interval", seconds=10)
+scheduler.add_job(func=createDailyChallenge, trigger="interval", seconds=10)
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
+#other end-----------------------------------------------------------
+
+#for testing-----------------------------------------------------------
+@app.route('/listusers')
+@login_required
+def listusers():
+    db = get_db()
+    page = []
+    page.append(' ')
+    sql = "SELECT * FROM user"
+    for row in db.cursor().execute(sql):
+        page.append(str(row)) 
+    return ''.join(page)
+
+@app.route('/querydatabase')
+@login_required
+def listcategories():
+    db = get_db()
+    page = []
+    page.append(' ')
+    sql = "SELECT u.username, u.played_quizzes, u.profile_pic, u.introduction, u.reg_date, (SELECT COUNT(*) FROM quizzes q WHERE q.user_id = 1) as created_quizzes, u.challenge_score, u.played_quizzes + (u.challenge_score * 10) + ((SELECT COUNT(*) FROM earned_achievements ea WHERE ea.user_id = 1) * 15) as score FROM user u WHERE u.id = 1"
+    categoryIDs = db.cursor().execute(sql).fetchall()
+    for item in categoryIDs:
+        page.append(str(item))
+    return ''.join('b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"')
+#for testing end-----------------------------------------------------------
+
 if __name__ == '__main__':
+    #local:
     app.run(host='127.0.0.1', port=3232, debug=True)
+    #uni vm:
+    #app.run(debug=True)
