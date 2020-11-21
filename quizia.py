@@ -1,3 +1,5 @@
+#the path for image folders and the database is different on uni vm's than it is on windows
+#todo: separate code to different files
 from flask import Flask, g 
 import sqlite3, os, atexit, time, schedule, random, uuid
 from flask import Flask, render_template, redirect, url_for, jsonify, request, session, make_response, json, flash
@@ -63,22 +65,27 @@ atexit.register(lambda: scheduler.shutdown())
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"'
+#local:
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
-
-#todo: improve editProfile validation
-#todo: improve css and html
-#todo: separate code to different files
-
+#uni vm:
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
+#local:
 UPLOAD_FOLDER = 'Quizia\static\questionImages'
+#uni vm:
+#UPLOAD_FOLDER = 'static/questionImages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+#local:
 UPLOAD_FOLDER2 = 'Quizia\static\profilePictures'
+#uni vm:
+#UPLOAD_FOLDER2 = 'static/profilePictures'
 app.config['UPLOAD_FOLDER2'] = UPLOAD_FOLDER2
-
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
+#local:
 db_location = 'Quizia\database\quizia.db'
+#uni vm:
+#db_location = 'database/quizia.db'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
