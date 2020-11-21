@@ -65,7 +65,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 
-#todo: handle invlaid username or password
 #todo: improve editProfile validation
 #todo: improve css and html
 #todo: separate code to different files
@@ -104,10 +103,57 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80)])
     remember = BooleanField('Stay logged in')
 
+    def __init__(self, *args, **kwargs):
+        FlaskForm.__init__(self, *args, **kwargs)
+        self.user = None
+
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        print(self.username.data)
+
+        if not rv:
+            return False
+
+        user = User.query.filter_by(username=self.username.data).first()
+        if user is None:
+            self.username.errors.append('Unknown username')
+            return False
+
+        if not check_password_hash(user.password,self.password.data):
+            self.password.errors.append('Invalid password')
+            return False
+
+        self.user = user
+        return True
+
 class RegisterForm(FlaskForm):
     email = StringField('E-mail', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     username = StringField('Username', validators=[InputRequired(), Length(min=4, max=15)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80)])
+
+    def __init__(self, *args, **kwargs):
+        FlaskForm.__init__(self, *args, **kwargs)
+        self.user = None
+
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        print(self.username.data)
+
+        if not rv:
+            return False
+
+        user = User.query.filter_by(username=self.username.data).first()
+        if user is not None:
+            self.username.errors.append('Username is taken')
+            return False
+
+        user = User.query.filter_by(email=self.email.data).first()
+        if user is not None:
+            self.email.errors.append('Email is taken')
+            return False
+
+        self.user = user
+        return True
 
 def init_db():
     with app.app_context():
