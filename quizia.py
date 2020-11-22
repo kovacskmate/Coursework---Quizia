@@ -88,6 +88,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80)])
     remember = BooleanField('Stay logged in')
 
+    #idea from https://stackoverflow.com/questions/16336803/invalid-login-logic-in-flask-python
     def __init__(self, *args, **kwargs):
         FlaskForm.__init__(self, *args, **kwargs)
         self.user = None
