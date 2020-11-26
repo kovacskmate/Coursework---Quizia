@@ -1,5 +1,4 @@
-#the path for image folders and the database is different on uni vm's than it is on windows
-#todo: separate code to different files
+#todo create more quizzes for inital db
 from flask import Flask, g 
 import sqlite3, os, atexit, time, random, uuid
 from flask import Flask, render_template, redirect, url_for, jsonify, request, session, make_response, json, flash
@@ -348,7 +347,7 @@ def createQuiz():
     return render_template('createQuiz.html', name=current_user.username, categories=categories)
 #create quiz-----------------------------------------------------------
 
-#paged pages and paging-----------------------------------------------------------
+#paged routes and paging-----------------------------------------------------------
 def paging(page, sql, template):
     db = get_db() 
     cur = db.cursor()  
@@ -430,7 +429,7 @@ def _saveQuizToDB():
                 break
         if not categoryExists:
             raise Exception("Category does not exist")        
-        #number of questions cannot be empty, has to be a number, and be bigger than 1
+        #number of questions cannot be empty, has to be a number and bigger than 1
         if not f['numberOfQuestions']:
             raise Exception("Number of questions was zero")
         elif not f['numberOfQuestions'].isdigit():
@@ -448,7 +447,6 @@ def _saveQuizToDB():
                 raise Exception("Question was empty")
             else:
                 questionQ.append(f['questionQ' + str(i + 1)])
-
             if not f['answer1' + str(i + 1)] or not f['answer2' + str(i + 1)] or not f['answer3' + str(i + 1)] or not f['answer4' + str(i + 1)]:
                 raise Exception("Answer was empty")
             else:
