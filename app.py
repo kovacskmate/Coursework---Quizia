@@ -20,20 +20,20 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"'
 
 #local:
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
-#uni vm:
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
+#uni vm:
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 
 #local:
-UPLOAD_FOLDER = 'Quizia\static\questionImages'
+#UPLOAD_FOLDER = 'Quizia\static\questionImages'
 #uni vm:
-#UPLOAD_FOLDER = 'static/questionImages'
+UPLOAD_FOLDER = 'static/questionImages'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #local:
-UPLOAD_FOLDER2 = 'Quizia\static\profilePictures'
+#UPLOAD_FOLDER2 = 'Quizia\static\profilePictures'
 #uni vm:
-#UPLOAD_FOLDER2 = 'static/profilePictures'
+UPLOAD_FOLDER2 = 'static/profilePictures'
 app.config['UPLOAD_FOLDER2'] = UPLOAD_FOLDER2
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -42,9 +42,9 @@ bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 
 #local:
-db_location = 'Quizia\database\quizia.db'
+#db_location = 'Quizia\database\quizia.db'
 #uni vm:
-#db_location = 'database/quizia.db'
+db_location = 'database/quizia.db'
 
 #db-----------------------------------------------------------
 def init_db():
