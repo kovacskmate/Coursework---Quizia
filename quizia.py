@@ -2,7 +2,7 @@
 #todo: separate code to different files
 
 from flask import Flask, g 
-import sqlite3, os, atexit, time, schedule, random, uuid
+import sqlite3, os, atexit, time, random, uuid
 from flask import Flask, render_template, redirect, url_for, jsonify, request, session, make_response, json, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm 
@@ -685,7 +685,9 @@ def listcategories():
 #for testing end-----------------------------------------------------------
 
 if __name__ == '__main__':
+    #heroku
+    app.run(threaded=True, port=5000)
     #local:
-    app.run(host='127.0.0.1', port=3232, debug=True)
+    #app.run(host='127.0.0.1', port=3232, debug=True)
     #uni vm:
     #app.run(debug=True)
