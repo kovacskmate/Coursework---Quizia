@@ -1,1 +1,1 @@
-web: gunicorn app:quizia.py
+web: gunicorn app:quizia
