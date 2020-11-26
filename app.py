@@ -1,6 +1,5 @@
 #the path for image folders and the database is different on uni vm's than it is on windows
 #todo: separate code to different files
-
 from flask import Flask, g 
 import sqlite3, os, atexit, time, random, uuid
 from flask import Flask, render_template, redirect, url_for, jsonify, request, session, make_response, json, flash
@@ -17,8 +16,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from PIL import Image
 
 app = Flask(__name__)
-
-print(app)
 
 app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"'
 
@@ -64,6 +61,9 @@ def get_db():
         g.db = db
     return db
 #db end-----------------------------------------------------------
+
+#heroku only
+init_db()
 
 #login, register-----------------------------------------------------------
 login_manager = LoginManager()
