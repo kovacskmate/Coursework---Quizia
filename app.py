@@ -18,6 +18,8 @@ from PIL import Image
 
 app = Flask(__name__)
 
+print(app)
+
 app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!\x8e\xd7ew)\x1a\x0b\x81"'
 
 #local:

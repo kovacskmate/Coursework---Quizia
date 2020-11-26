@@ -1,1 +1,1 @@
-web:gunicorn quizia:app
+web:gunicorn app:app
