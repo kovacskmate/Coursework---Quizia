@@ -21,18 +21,18 @@ app.config['SECRET_KEY'] = 'b"\'\xb6\x0c\x06\xf3\xe8\x9do\xb4\xfb\xffx\x12\xafQ!
 
 #local:
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
-#uni vm:
+#uni vm & heroku:
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/quizia.db'
 
 #local:
 #UPLOAD_FOLDER = 'Quizia\static\questionImages'
-#uni vm:
+#uni vm & heroku:
 UPLOAD_FOLDER = 'static/questionImages'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #local:
 #UPLOAD_FOLDER2 = 'Quizia\static\profilePictures'
-#uni vm:
+#uni vm & heroku:
 UPLOAD_FOLDER2 = 'static/profilePictures'
 app.config['UPLOAD_FOLDER2'] = UPLOAD_FOLDER2
 
@@ -43,7 +43,7 @@ db = SQLAlchemy(app)
 
 #local:
 #db_location = 'Quizia\database\quizia.db'
-#uni vm:
+#uni vm & heroku:
 db_location = 'database/quizia.db'
 
 #db-----------------------------------------------------------
