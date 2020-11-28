@@ -454,7 +454,8 @@ def _saveQuizToDB():
                 questionQ.append(f['answer2' + str(i + 1)])
                 questionQ.append(f['answer3' + str(i + 1)])
                 questionQ.append(f['answer4' + str(i + 1)])
-            file = request.files['image' + str(i + 1)]
+
+            file = request.files['image' + str(i + 1)]            
             if not file.filename:
                 questionQ.append('/static/questionImages/noImage.PNG')
             else:

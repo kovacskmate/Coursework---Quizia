@@ -20,6 +20,7 @@ CREATE TABLE user (
 );
 
 INSERT INTO user (id, username, email, password, played_quizzes, profile_pic, introduction, reg_date, challenge_score) VALUES (1, 'testUser', 'testUser@testUser.com', 'sha256$Nj90WrYv$7f4e8974ab3529be3ff46eee4fd822848e29afb334b92eaae68f9f7b7d188482', 123, '/static/profilePictures/defaultProfPic.png', 'No introduction', '2020-10-03', 32);
+INSERT INTO user (id, username, email, password, played_quizzes, profile_pic, introduction, reg_date, challenge_score) VALUES (2, 'testUser2', 'testUser2@testUser2.com', 'sha256$Nj90WrYv$7f4e8974ab3529be3ff46eee4fd822848e29afb334b92eaae68f9f7b7d188482', 44, '/static/profilePictures/defaultProfPic.png', 'No introduction', '2020-11-20', 12);
 
 CREATE TABLE achievements (
     achievement_id   INTEGER   PRIMARY KEY,
@@ -34,7 +35,7 @@ INSERT INTO achievements ( achievement_id, achievement_name, description, method
 INSERT INTO achievements ( achievement_id, achievement_name, description, methodname, condition, icon ) VALUES (1,'10 days old account','Found a new hobby?', 'memberSince', '10', '/static/achievementIcons/10days.png');
 INSERT INTO achievements ( achievement_id, achievement_name, description, methodname, condition, icon ) VALUES (2,'100 days old account', 'You must really like it here', 'memberSince', '100', '/static/achievementIcons/100days.png');
 INSERT INTO achievements ( achievement_id, achievement_name, description, methodname, condition, icon ) VALUES (3,'1000 days old account','Veteran', 'memberSince', '1000', '/static/achievementIcons/1000days.png');
-INSERT INTO achievements ( achievement_id, achievement_name, description, methodname, condition, icon ) VALUES (4,'10 played quizzes','You can do better than this', 'playedQuizzes', '10', '/static/achievementIcons/10quizzes.png');
+INSERT INTO achievements ( achievement_id, achievement_name, description, methodname, condition, icon ) VALUES (4,'5 played quizzes','You can do better than this', 'playedQuizzes', '5', '/static/achievementIcons/10quizzes.png');
 INSERT INTO achievements ( achievement_id, achievement_name, description, methodname, condition, icon ) VALUES (5,'100 played quizzes','Getting smarter...', 'playedQuizzes', '100', '/static/achievementIcons/100quizzes.png');
 INSERT INTO achievements ( achievement_id, achievement_name, description, methodname, condition, icon ) VALUES (6,'1000 played quizzes','That is some dedication', 'playedQuizzes', '1000', '/static/achievementIcons/1000quizzes.png');
 INSERT INTO achievements ( achievement_id, achievement_name, description, methodname, condition, icon ) VALUES (7,'5000 played quizzes','You really have this much freetime?', 'playedQuizzes', '5000', '/static/achievementIcons/5000quizzes.png');
@@ -70,7 +71,31 @@ CREATE TABLE quizzes (
 INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (1,6,1,'A general quiz',0);
 INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (2,4,1,'A science quiz',0);
 INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (3,1,1,'A music quiz',0);
-INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (4,0,1,'A sports quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (4,0,1,'A sports quiz',2);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (5,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (6,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (7,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (8,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (9,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (10,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (11,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (12,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (13,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (14,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (15,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (16,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (17,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (18,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (19,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (20,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (21,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (22,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (23,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (24,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (25,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (26,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (27,0,1,'Placeholder quiz',0);
+INSERT INTO quizzes ( quiz_id, category_id, user_id, quiz_name, plays) VALUES (28,0,1,'Placeholder quiz',0);
 
 CREATE TABLE questions (
     question_id      INTEGER PRIMARY KEY,
@@ -105,11 +130,36 @@ INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answe
 INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(16, 2, 'Who invented man-made fizzy drinks?', 15, '/static/questionImages/fizzy.jpg', 'Antoine Lavoisier', 'Carl Wilhelm Scheele', 'Henry Cavendish', 'Joseph Priestley', 'answer4', 0, 0);
 INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(17, 3, 'What pop group created the surfin sound?', 10, '/static/questionImages/beachboys.jpg', 'Journey', 'The Cure', 'The Beach Boys', 'Kool and the Gang', 'answer3', 0, 0);
 INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(18, 3, 'What was Adeles first record called?', 15, '/static/questionImages/adele.jpg', 'Hometown Glory', 'Rolling In The Deep', ' One and Only', 'Turning Tables', 'answer1', 0, 0);
-INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(19, 3, 'Who was lead singer with the 1970s pop group Slade?', 20, '/static/questionImages/slade.jpg', 'Derek Leckenby', 'Peter Noone', 'Karl Green', 'Barry Whitwam', 'answer2', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(19, 3, 'Who was lead the singer of the 1970s pop group Slade?', 20, '/static/questionImages/slade.jpg', 'Derek Leckenby', 'Peter Noone', 'Karl Green', 'Barry Whitwam', 'answer2', 0, 0);
 INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(20, 3, 'Losing my religion was a hit for which rock band?', 20, '/static/questionImages/rem.jpg', 'R.E.M.', 'The Beatles', 'Green Day', 'Arcade Fire', 'answer1', 0, 0);
 INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(21, 3, 'Who is the best musician of all time?', 10, '/static/questionImages/paul.jpg', 'Paul McCartney', 'Madonna', 'Elvis Presley', 'Bob Dylan', 'answer1', 0, 0);
 INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(22, 3, 'In what year did the Beatles first go to the USA?', 20, '/static/questionImages/beatles.jpg', '1964', '1965', '1963', '1962', 'answer1', 0, 0);
-INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(23, 4, 'Who was the BBCs Sports Personality of the Year in 2001?', 10, '/static/questionImages/beckham.jpg', 'Zinedine Zidane', 'David Beckham', 'Diego Maradona', 'Ronaldinho', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(23, 4, 'Who was the BBCs Sports Personality of the Year in 2001?', 10, '/static/questionImages/beckham.jpg', 'Zinedine Zidane', 'David Beckham', 'Diego Maradona', 'Ronaldinho', 'answer2', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(24, 5, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(25, 6, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(26, 7, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(27, 8, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(28, 9, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(29, 10, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(30, 11, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(31, 12, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(32, 13, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(33, 14, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(34, 15, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(35, 16, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(36, 17, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(37, 18, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(38, 19, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(39, 20, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(40, 21, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(41, 22, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(42, 23, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(43, 24, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(44, 25, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(45, 26, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(46, 27, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+INSERT INTO questions ( question_id, quiz_id, question, time_limit, image, answer1, answer2, answer3, answer4, correctAnswer, attempts, correct_attempts) VALUES(47, 28, 'Placeholder?', 10, '/static/questionImages/noImage.png', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'answer1', 0, 0);
+
 
 CREATE TABLE challenge_progress (
     user_id            INTEGER PRIMARY KEY,
