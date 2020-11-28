@@ -13,7 +13,7 @@
                     $("#popularQuizUL").append('<p>No quizzes yet</p>');
                 } else{
                     for(i = 0; i < popular.length; i++){
-                        $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (i+1) +'.</p><p>' + popular[i][3] + '</p><p>' + popular[i][1] + '</p><p>' + popular[i][4] + '</p><p>' + popular[i][2] + '</p><p><a href=/play/"' + popular[i][0] + '">Play</a></p></li>')
+                        $("#popularQuizUL").append('<li class="flex-toplist"><p>' + (i+1) +'.</p><p>' + popular[i][3] + '</p><p>' + popular[i][1] + '</p><p>' + popular[i][4] + '</p><p>' + popular[i][2] + '</p><p><a href=/play/' + popular[i][0] + '>Play</a></p></li>')
                     }
                 }  
                 
@@ -21,7 +21,7 @@
                     $("#newQUL").append('<p>No quizzes yet</p>');
                 } else{
                     for(i = 0; i < newQ.length; i++){
-                        $("#newQUL").append('<li class="flex-toplist"><p>' + (i+1) +'.</p><p>' + newQ[i][3] + '</p><p>' + newQ[i][1] + '</p><p>' + newQ[i][4] + '</p><p>' + newQ[i][2] + '</p><p><a href=/play/"' + newQ[i][0] + '">Play</a></p></li>')
+                        $("#newQUL").append('<li class="flex-toplist"><p>' + (i+1) +'.</p><p>' + newQ[i][3] + '</p><p>' + newQ[i][1] + '</p><p>' + newQ[i][4] + '</p><p>' + newQ[i][2] + '</p><p><a href=/play/' + newQ[i][0] + '>Play</a></p></li>')
                     }
                 }
 
