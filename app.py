@@ -654,8 +654,8 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=checkForAchievements, trigger="interval", seconds=10)
-scheduler.add_job(func=createDailyChallenge, trigger="interval", seconds=10)
+scheduler.add_job(func=checkForAchievements, trigger="interval", seconds=86400)
+scheduler.add_job(func=createDailyChallenge, trigger="interval", seconds=86400)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 #other end-----------------------------------------------------------
